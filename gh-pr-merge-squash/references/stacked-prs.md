@@ -7,9 +7,12 @@ base branches need not be a native stack.
 
 ## Discover the remote scope
 
-Use the PR's verified host and base repository for API calls. Examples below
-use `repo` for `OWNER/REPO` and `pr_number` for the requested PR, never a
-stack number. On another GitHub host, pass `--hostname` explicitly.
+Use the verified host. For the selected PR and its native stack, the examples
+below use its base repository as `repo` (`OWNER/REPO`) and its PR number as
+`pr_number`, never a stack number. Dependency searches use the repositories
+specified by the [initial discovery](../SKILL.md#detect-stacks-and-dependents),
+including the head repository for dependents of a fork PR. On another GitHub
+host, pass `--hostname` explicitly.
 
 ```sh
 gh api "repos/$repo/pulls/$pr_number"
@@ -24,25 +27,42 @@ their states, head repositories/refs/SHAs, and immediate bases. A local
 unsupported stack endpoints are not evidence of absence: resolve uncertain
 membership before merging when stack evidence exists.
 
-Also list open PRs whose base is this PR's head ref, with pagination, and
-verify repository identities; follow further dependents when relevant.
-This detects ordinary dependent PRs as well as corroborating native stacks.
-For an ordinary PR chain, also follow the selected PR's lower dependencies
-through its base branch, resolving repository identities and PR states,
-and stopping at the trunk established by the main skill. Do not search for
-predecessors sourced from that trunk; a PR from the trunk to another branch
-does not make it a lower dependency.
-The eligibility rule below applies to native stacks and ordinary chains.
+Follow further dependent PRs when relevant, using the pagination and repository
+identity checks from the [initial discovery](../SKILL.md#detect-stacks-and-dependents).
 
-For a native stack, selecting a PR merges it and every open PR below it
-into the stack base. This skill permits merging only the lowest unmerged
-PR: every PR below the selected one must already be confirmed merged.
+## Qualify predecessor candidates
+
+A matching head repository/ref identifies a candidate, not necessarily a
+current predecessor. A closed PR may refer to an old branch that was deleted
+and recreated under the same name. Compare the candidate's recorded head SHA
+with the fetched current base tip and history; use explicit stack or local
+catalog membership when available to establish the relationship.
+
+Exclude unrelated historical PRs rather than blocking on their names alone.
+Rewritten history can also remove ancestry, so a failed ancestry check alone
+does not prove the PR is unrelated. Resolve ambiguous relationships before
+merging; do not treat uncertainty as absence or automatically classify every
+historical name match as an unmerged dependency.
+
+## Establish destination and eligibility
+
+For a native stack, the actual landing destination is the stack base, which
+may differ from the PR's immediate base. When the main skill requires target
+confirmation for an eligible native stack PR, explain both the immediate
+base and actual stack destination. Confirmation cannot make an upper PR
+eligible while a lower PR remains unmerged.
+
+For both native stacks and ordinary PR chains, this skill permits merging
+only the lowest unmerged PR: every PR below the selected one must already
+be confirmed merged.
 Closed without merging, queued, pending, or unknown is not merged. If this
 condition fails, stop before mutation and name the lowest unmerged PR to
 handle first; do not offer a confirmation that would allow a combined merge
 or merge a predecessor on the user's behalf. Upper PRs must remain unmerged.
-Do not use a whole-stack target or rely on ambiguous numeric resolution in
-`gh stack merge`.
+
+For a native stack, GitHub merges the selected PR and every open PR below it
+into the stack base. Do not use a whole-stack target or rely on ambiguous
+numeric resolution in `gh stack merge`.
 
 For example, with PR1 merged, PR2 unmerged, and PR3 unmerged, PR2 is eligible
 for readiness checks; PR3 is blocked by PR2. A request to merge PR3 alone
@@ -58,9 +78,13 @@ rewrite. Squash means one commit per PR.
 
 ## Submit and track the merge
 
-For a native stack, use GitHub's asynchronous endpoint after completing the
-main skill's readiness and confirmation checks. Refresh both the requested
-PR and the remote stack immediately before submission. The payload's `sha`
+For a native stack, use GitHub's asynchronous endpoint directly after completing
+the main skill's readiness and confirmation checks. Do not first try
+`gh pr merge`, which does not support this merge path. Avoid `gh stack merge`
+when its installed version cannot bind the operation to the checked head SHA
+and explicit commit message, or its target could resolve to a stack number
+instead of the intended PR. Refresh both the requested PR and the remote
+stack immediately before submission. The payload's `sha`
 guards only the selected PR head. Confirm again that no unmerged lower PR
 would be included; a multi-PR batch is outside this skill's permitted scope.
 
@@ -88,21 +112,20 @@ if it is not required; it does not guarantee the supplied direct-merge
 method or message. If queue configuration is unknown, resolve it before
 submitting. Never use `direct_merge` to evade a queue or enable rule bypass.
 
-Keep the UUID from the response and poll using the main skill's
-[completion observation window and backoff](../SKILL.md#wait-for-merge-completion):
+Keep the UUID from the response and read
+[Wait for merge completion](merge-completion.md) for the shared observation
+window, backoff, deadline, and resumption rules. Poll with:
 
 ```sh
 gh api "repos/$repo/pulls/$pr_number/merge-async/$uuid"
 ```
 
 - `202` means accepted, not merged. Rules are evaluated during execution.
-- `pending` means keep polling within that observation window. At its
-  deadline, follow the main skill's final PR state check: if merged, continue
-  with verification and guarded cleanup; report the pending request and its
-  UUID only if it remains pending. While the merge is unconfirmed, do not
-  start another merge or clean up branches.
+- `pending` means keep polling within that observation window. Apply the
+  completion reference's final PR state check at the deadline. While the merge
+  is unconfirmed, do not start another merge or clean up branches.
 - `merged` provides a result SHA; still confirm the PR's merged state and
-  verify the fetched commit as required by the main skill.
+  verify the fetched commit under [local verification and cleanup](local-cleanup.md).
 - `enqueued` is terminal for this asynchronous request, but the PR has not
   merged. Follow the PR/queue state for completion, not the same UUID, using
   the remaining observation window.
@@ -112,24 +135,24 @@ gh api "repos/$repo/pulls/$pr_number/merge-async/$uuid"
   options rather than resubmitting; report any mismatch with the intended
   operation. After a timeout or expired UUID, recover from current PR state.
 
-An explicitly empty `commit_message` can still yield a generated body, as
-observed in the reported first use. Verify the full resulting message;
-do not assume all API paths or GitHub versions behave identically.
+An explicitly empty `commit_message` can still yield a generated body.
+Verify the full resulting message; do not assume all API paths or GitHub
+versions behave identically.
 
 ## Reconcile dependents and retire the merged branch
 
-After the merge, refresh the stack and every recorded dependent PR. Repeat
-the paginated search for open PRs targeting the merged PR's head branch
-before deletion, to discover dependents created during the wait. If this
-search cannot be completed, retain the local branch. Compare current states,
+After the merge, refresh the stack and every recorded dependent PR. The
+[pre-deletion discovery](local-cleanup.md#refresh-dependencies-before-deletion)
+also finds dependents created during the wait. Compare current states,
 base refs and remote head SHAs with the snapshot. GitHub can
 automatically retarget and rebase surviving PRs. Fetch their current heads
 without resetting local branches; if the remote and local tips differ,
 report both and whether local synchronization remains necessary. Do not
 merge or force-push a stale local child back onto the rewritten remote head.
 
-Retire only the merged PR's local topic branch, and only after all the main
-skill's identity, merged-head, worktree and ignored-file checks pass, plus:
+Retire only the merged PR's local topic branch, and only after all
+[local cleanup](local-cleanup.md) identity, merged-head, worktree and
+ignored-file checks pass, plus:
 
 - No open dependent PR still targets that branch. If the transition is
   pending or cannot be verified, retain it with that concrete reason.
@@ -145,7 +168,7 @@ skill's identity, merged-head, worktree and ignored-file checks pass, plus:
   retargeting alone does not require creating or synchronizing a catalog.
 
 Do not retain the branch solely because it once belonged to a stack. If
-these conditions hold, delete it using the main skill's guarded cleanup.
+these conditions hold, delete it using the local cleanup procedure.
 Otherwise name the precise dependency preventing deletion.
 
 `gh stack sync` fetches, rebases, pushes, and updates stack metadata; it is
@@ -166,6 +189,7 @@ as incidental cleanup.
 
 ## Sources
 
+- [Repository-scoped PR listing and base/head filters](https://docs.github.com/en/rest/pulls/pulls#list-pull-requests)
 - [Stack membership and API behavior](https://docs.github.com/en/pull-requests/reference/stacked-pull-requests-apis-and-webhooks)
 - [Stack discovery endpoints](https://docs.github.com/en/rest/pulls/stacks)
 - [Asynchronous merge request and result](https://docs.github.com/en/rest/pulls/pulls#merge-a-pull-request-asynchronously)
