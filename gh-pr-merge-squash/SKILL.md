@@ -42,17 +42,29 @@ to inspect or prepare a merge does not authorize the merge itself.
   Identify the local branch that actually corresponds to the PR head; a
   matching branch name alone is insufficient, especially for fork PRs.
   Preserve uncommitted work and local commits that are absent from the PR.
-- Read the PR's GitHub REST resource, including its `stack` field; local
-  `gh stack view --json` alone cannot rule out a remote stack. Also look for
-  open PRs targeting this head branch, even without a native stack. Record
-  dependent PRs' base refs and head SHAs before merging. For stack discovery,
-  merge scope, and cleanup, read [Stacked PRs](references/stacked-prs.md).
-  For a pending merge, only the lowest unmerged PR in a stack is eligible:
-  verify that every lower PR is already merged and that the merge operation
-  would include only the requested PR. Otherwise stop before mutation and
-  identify the blocker. Do not offer confirmation for a combined merge,
-  merge predecessors automatically, or retarget/unstack the PR to bypass
-  this rule. Do not run a stack-wide synchronization as incidental cleanup.
+
+### Detect stacks and dependents
+
+Read the PR's GitHub REST resource, including its `stack` field, using the
+verified host and base repository. Local `gh stack view --json` alone cannot
+rule out a remote stack. The stopping point for predecessor discovery is
+the native stack's declared base, or otherwise the base repository's default
+branch unless the user or repository instructions establish another trunk.
+
+With pagination and repository identity checks, always look for open PRs
+targeting this PR's head branch. Look for unmerged predecessor PRs whose head
+is this PR's base branch only when that base is not the established trunk;
+include closed, unmerged predecessors. Stop any further predecessor traversal
+at the trunk, even if PRs sourced from that branch exist. Also check for a
+local stack catalog or identified dependent local branches. Record dependent
+PRs' base refs and head SHAs before merging.
+
+If this detects a native stack, an ordinary PR chain, local dependencies,
+or uncertain stack evidence, read [Stacked PRs](references/stacked-prs.md)
+before mutation for full scope, eligibility, merge, and retirement rules.
+Otherwise continue here without loading that reference. API errors are not
+evidence of absence; resolve uncertain membership before merging when stack
+evidence exists.
 
 ## Confirm the merge intent
 
@@ -139,8 +151,25 @@ If the head changes, inspect and check the new head and re-evaluate whether
 squash confirmation is required before retrying. If a merge attempt fails
 or its outcome is uncertain, read the PR state before retrying. Do not
 repeatedly retry an unchanged blocker.
-Queued or auto-merge-enabled is not yet merged: wait for completion or report
-the pending state, and defer cleanup.
+
+### Wait for merge completion
+
+Queued or auto-merge-enabled is not yet merged. Unless the user specifies
+another duration, observe completion for up to five minutes after submission,
+polling with backoff from five to at most thirty seconds between requests.
+Use one observation window across asynchronous processing and queue waits;
+a status change does not restart it. For an existing request, start the
+window when resuming observation.
+
+At the deadline, refresh the PR state once and let that result determine
+the next step. If merged, continue with verification, synchronization, and
+guarded cleanup, even if the last asynchronous result was `pending`. If closed
+without merging, report that state and defer cleanup. If still pending,
+report the PR URL, latest state, and asynchronous request UUID when available,
+and defer cleanup. Explain that the server-side operation may still complete;
+ending observation does not cancel it. If the final state cannot be retrieved,
+report the uncertainty and defer cleanup. On resumption, inspect the existing
+request and PR state before considering a new submission.
 
 ## Synchronize and clean up
 
@@ -166,8 +195,12 @@ incomplete cleanup.
    mismatch as a completed merge with a discrepancy, distinguishing an empty
    body requested from one actually obtained. Never amend or force-push the
    published target to repair its message as incidental cleanup.
-   Rediscover and refresh dependent PRs as described in the stack reference
-   before deciding whether their old local parent branch can be deleted.
+   Repeat the stack and dependent discovery above before deleting the local
+   topic branch, including when none were found before merging. If discovery
+   cannot be completed, retain the branch. If stack evidence or dependencies
+   were found before or after merging, apply the stack reference's
+   reconciliation and retirement rules, including refreshing every recorded
+   dependent PR.
 2. Before switching to or updating an existing local target, verify that its
    upstream corresponds to the verified landing repository and branch,
    rather than an obsolete intermediate base in a stack. Resolve the

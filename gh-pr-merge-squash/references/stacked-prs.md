@@ -1,8 +1,9 @@
 # Stacked PRs
 
-Use this procedure when discovering or handling dependent PRs. A native
-GitHub stack and a local `gh-stack` catalog are separate sources of state.
-An ordinary chain of PR base branches need not be a native stack.
+Read this reference when the main skill's initial discovery finds a stack,
+dependencies, or uncertain stack evidence. A native GitHub stack and a local
+`gh-stack` catalog are separate sources of state. An ordinary chain of PR
+base branches need not be a native stack.
 
 ## Discover the remote scope
 
@@ -27,7 +28,10 @@ Also list open PRs whose base is this PR's head ref, with pagination, and
 verify repository identities; follow further dependents when relevant.
 This detects ordinary dependent PRs as well as corroborating native stacks.
 For an ordinary PR chain, also follow the selected PR's lower dependencies
-through its base branch, resolving repository identities and PR states.
+through its base branch, resolving repository identities and PR states,
+and stopping at the trunk established by the main skill. Do not search for
+predecessors sourced from that trunk; a PR from the trunk to another branch
+does not make it a lower dependency.
 The eligibility rule below applies to native stacks and ordinary chains.
 
 For a native stack, selecting a PR merges it and every open PR below it
@@ -84,19 +88,24 @@ if it is not required; it does not guarantee the supplied direct-merge
 method or message. If queue configuration is unknown, resolve it before
 submitting. Never use `direct_merge` to evade a queue or enable rule bypass.
 
-Keep the UUID from the response and poll with bounded waits:
+Keep the UUID from the response and poll using the main skill's
+[completion observation window and backoff](../SKILL.md#wait-for-merge-completion):
 
 ```sh
 gh api "repos/$repo/pulls/$pr_number/merge-async/$uuid"
 ```
 
 - `202` means accepted, not merged. Rules are evaluated during execution.
-- `pending` means keep polling with backoff or report the pending request
-  and its UUID. Do not start another merge or clean up branches.
+- `pending` means keep polling within that observation window. At its
+  deadline, follow the main skill's final PR state check: if merged, continue
+  with verification and guarded cleanup; report the pending request and its
+  UUID only if it remains pending. While the merge is unconfirmed, do not
+  start another merge or clean up branches.
 - `merged` provides a result SHA; still confirm the PR's merged state and
   verify the fetched commit as required by the main skill.
 - `enqueued` is terminal for this asynchronous request, but the PR has not
-  merged. Follow the PR/queue state for completion, not the same UUID.
+  merged. Follow the PR/queue state for completion, not the same UUID, using
+  the remaining observation window.
 - `failed` means report the supplied reason. Re-read the PR before deciding
   whether a changed condition justifies a fresh attempt.
 - `409` can identify an already pending request. Inspect its UUID, SHA and
