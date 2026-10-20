@@ -29,7 +29,10 @@ inventing a requested one. Where the pre-merge base is known, verify
 that exactly one commit represents this PR's integration;
 do not count unrelated commits that landed concurrently. Report a message
 mismatch as a completed merge with a discrepancy, distinguishing an empty
-body requested from one actually obtained. Never amend or force-push the
+body requested from one actually obtained. State whether the difference falls
+within a limitation disclosed before submission or violates an exact-message
+requirement; disclosure does not make an unmet requirement satisfied. Verification
+does not replace the pre-submission message check. Never amend or force-push the
 published target to repair its message as incidental cleanup.
 
 ## Refresh dependencies before deletion

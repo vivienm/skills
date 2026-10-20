@@ -96,8 +96,25 @@ requirement; stop if incompatible or unverifiable.
 Choose a meaningful subject from the final diff and PR under repository commit
 conventions, not a blind concatenation of intermediate messages. For direct
 merges, supply the subject and body explicitly; use an empty body unless extra
-context is useful. If an exact message is required, establish that the merge
-path can honor it before submitting, or report the limitation.
+context is useful.
+
+The single-commit requirement and the commit-message requirements are separate.
+Sending an explicit subject and body, including an empty string, does not by
+itself establish that GitHub will use that exact message. Before submission,
+check the selected merge path's message controls and relevant repository
+defaults; for native stacks, apply the reference's message limitations.
+
+If the path may generate, append, or replace message text, explain the concrete
+limitation before merging or enabling auto-merge/queueing. Distinguish the
+message requested from what can be guaranteed. If the user or repository rules
+require an exact subject or body, including a strictly empty body, stop before
+submission unless the path is known to honor that requirement. Do not silently
+relax it. Otherwise the skill's chosen wording and empty-body default are
+preferences: disclose any known limitation and continue the authorized merge
+without another confirmation.
+
+Keep the GitHub merge workflow. Do not rewrite branches or change repository
+settings merely to work around message limitations.
 
 Immediately before every submission, refresh the PR and verify the checked
 head SHA, target repository/branch, and stack membership/order. If changed,

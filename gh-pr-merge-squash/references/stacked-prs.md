@@ -73,8 +73,22 @@ can unambiguously target the PR and bind the checked SHA and explicit message.
 The main skill's final scope refresh must include the remote stack and
 eligibility: the payload's `sha` guards only the selected PR head.
 
+For direct native-stack merges, `commit_title` and `commit_message` request
+message text; they do not establish an exact-message guarantee. The API describes
+`commit_message` as extra detail appended to the automatic message. In particular,
+an empty `commit_message` can still yield a generated body containing intermediate
+commit messages. Explain this limitation and apply the main skill's
+[message requirements](../SKILL.md#merge-on-github) before submitting the request,
+not only during post-merge verification.
+
+Inspect the landing repository's squash-message defaults when relevant.
+The title-only format (`squash_merge_commit_message: "BLANK"`) aligns the default
+with the empty-body preference, but is not proof that this endpoint honors an
+exact message. Suggest it when useful; do not change repository settings as part
+of merging a PR.
+
 With no merge queue configured for the destination, explicitly select a direct
-squash merge and supply the message; use a file for a nonempty body:
+squash merge and supply the requested message; use a file for a nonempty body:
 
 ```sh
 jq -n --arg sha "$head_sha" --arg title "$subject" \
@@ -114,9 +128,6 @@ gh api "repos/$repo/pulls/$pr_number/merge-async/$uuid"
 - `409` can identify an already pending request. Inspect its UUID, SHA and
   options rather than resubmitting; report any mismatch with the intended
   operation. After a timeout or expired UUID, recover from current PR state.
-
-An empty `commit_message` can still yield a generated body; local verification
-must inspect the actual message.
 
 ## Reconcile dependents and retire the merged branch
 
@@ -161,6 +172,7 @@ what remains. Never delete remote refs as incidental cleanup.
 - [Stack membership and API behavior](https://docs.github.com/en/pull-requests/reference/stacked-pull-requests-apis-and-webhooks)
 - [Stack discovery endpoints](https://docs.github.com/en/rest/pulls/stacks)
 - [Asynchronous merge request and result](https://docs.github.com/en/rest/pulls/pulls#merge-a-pull-request-asynchronously)
+- [Default squash commit messages](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/configuring-commit-squashing-for-pull-requests)
 - [Merge order and automatic rebasing](https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/merging-stacked-pull-requests)
 
 Check current documentation and installed CLI help if these interfaces
