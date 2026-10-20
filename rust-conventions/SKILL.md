@@ -16,6 +16,9 @@ unchanged. Do not perform unrelated style cleanups.
 
 For modules with submodules, prefer `foo.rs` over `foo/mod.rs`.
 
+Place `use` imports before `mod foo;` declarations unless repository conventions
+specify otherwise; preserve any ordering required by macros.
+
 ## Imports
 
 ### Choosing what to import
