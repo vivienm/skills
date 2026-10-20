@@ -112,9 +112,10 @@ if it is not required; it does not guarantee the supplied direct-merge
 method or message. If queue configuration is unknown, resolve it before
 submitting. Never use `direct_merge` to evade a queue or enable rule bypass.
 
-Keep the UUID from the response and read
-[Wait for merge completion](merge-completion.md) for the shared observation
-window, backoff, deadline, and resumption rules. Poll with:
+Read [Wait for merge completion](merge-completion.md) for the shared observation
+window, backoff, deadline, and resumption rules. An immediate `200` can report
+`merged` or `enqueued` without a UUID; apply the status rules below before
+attempting UUID polling. For a pending request, keep its UUID and poll with:
 
 ```sh
 gh api "repos/$repo/pulls/$pr_number/merge-async/$uuid"

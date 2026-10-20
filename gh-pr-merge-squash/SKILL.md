@@ -67,13 +67,15 @@ performed and either condition applies:
   this skill was explicitly invoked. Do not retarget or merge dependencies
   instead. For native stacks, apply the reference's destination and eligibility
   rules before asking.
-- This skill was selected implicitly, the PR has multiple commits, and the
-  user has not explicitly requested or confirmed squashing this PR. State the
-  count and ask to combine them. Explicit invocation of `$gh-pr-merge-squash`
-  or a direct request to use this named skill expresses squash intent.
+- This skill was selected implicitly, the PR has multiple commits, and
+  squash intent has not been established. State the count and ask to combine
+  them. Explicit invocation of `$gh-pr-merge-squash` or a direct request to use
+  this named skill expresses squash intent. An applicable standing instruction
+  to squash PRs by default also establishes squash intent; do not ask again
+  solely because this PR has multiple commits.
 
-A generic "merge this PR" confirms neither condition. Combine both questions
-when applicable and wait for the answer. Already merged PRs need neither
+A generic "merge this PR" alone confirms neither condition. Combine both
+questions when applicable and wait for the answer. Already merged PRs need neither
 confirmation for the remaining synchronization and guarded cleanup.
 
 ## Merge on GitHub
