@@ -25,6 +25,12 @@ Follow further dependent PRs when relevant.
 
 ## Qualify predecessor candidates
 
+For predecessor traversal, the trunk is the native stack's declared base,
+otherwise the base repository's default branch unless instructions establish
+another trunk. When the PR's base differs from the trunk, follow unmerged
+predecessor candidates whose head repository/ref matches each successive base;
+include closed, unmerged PRs. Stop at the trunk even if PRs originate there.
+
 A matching head repository/ref is only a candidate: a closed PR may predate
 branch deletion and recreation. Compare its recorded head SHA with the fetched
 current base tip and history, using explicit stack or local catalog membership

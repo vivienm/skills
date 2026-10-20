@@ -24,10 +24,9 @@ Prefer imports that keep module bodies readable. Import a commonly used type
 or trait directly, or import its module when that gives a useful short
 qualifier. Do not wait for a name to occur multiple times before importing it.
 
-- Import distinctive types directly: `Path`, `PathBuf`, `OsStr`, `OsString`,
-  `HashMap`, `HashSet`, `BTreeMap`, `BTreeSet`, `Rc`, `Arc`, `Mutex`, `Duration`,
-  `Instant`, etc. Prefer `Path` over `std::path::Path` or `path::Path` in
-  signatures and expressions.
+- Import distinctive types directly, such as `Path`, `HashMap`, `Arc`, and
+  `Duration`. Prefer `Path` over `std::path::Path` or `path::Path` in signatures
+  and expressions.
 - Import utility modules such as `io`, `fs`, `env`, and `process` when useful.
   Keep meaningful qualifiers such as `io::Result`, `io::Error`,
   `io::ErrorKind`, and `fs::read_to_string`, rather than importing every
@@ -53,23 +52,10 @@ macro paths need not all become imports. Import only what is used.
 For example:
 
 ```rust
-use std::{
-    fmt::{self, Display, Formatter},
-    fs,
-    io,
-    path::Path,
-};
+use std::{fs, io, path::Path};
 
 fn read_config<P: AsRef<Path>>(path: P) -> io::Result<String> {
     fs::read_to_string(path)
-}
-
-struct Label(String);
-
-impl Display for Label {
-    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        f.write_str(&self.0)
-    }
 }
 ```
 

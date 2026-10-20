@@ -38,41 +38,37 @@ A request to inspect or prepare a merge does not authorize merging.
 
 Read the PR's REST resource, including `stack`, on the verified host and base
 repository; local `gh stack view --json` cannot rule out a remote stack.
-For predecessor traversal, the trunk is the native stack's declared base,
-otherwise the base repository's default branch unless instructions establish
-another trunk.
+Outside a native stack, the trunk is the base repository's default branch
+unless instructions establish another.
 
-With pagination, always find open dependent PRs in this PR's head repository,
-including forks; verify their `base.repo` and `base.ref` match its head repository
-and ref. When its base differs from the trunk, follow unmerged predecessor
-candidates whose head repository/ref matches each successive base; include closed,
-unmerged PRs. Stop traversal at the trunk even if PRs originate there. Check
-local stack catalogs and identified local dependents; record dependent PRs'
-base refs and head SHAs before merging.
+Always search this PR's head repository for open dependent PRs, including
+forks and all pages; verify their `base.repo` and `base.ref` match its head
+repository and ref. Check local stack catalogs and identified local dependents;
+record dependent PRs' base refs and head SHAs before merging.
 
-Read [Stacked PRs](references/stacked-prs.md) before mutation only if discovery
-finds stacks, predecessor candidates, local dependencies, or uncertain stack
-evidence; use it to qualify historical candidates before treating them as
-dependencies. API errors are not evidence of absence; resolve uncertain
-membership before merging when stack evidence exists.
+Read [Stacked PRs](references/stacked-prs.md) before mutation if a native or local
+stack is found, the PR's base differs from the trunk, dependencies are found,
+or stack evidence is uncertain. Follow its predecessor discovery and eligibility
+rules. API errors are not evidence of absence; resolve uncertain membership
+before merging when stack evidence exists.
 
 ## Confirm the merge intent
 
-For an unmerged PR, obtain any required confirmation before mutation:
+For an unmerged PR, evaluate destination and squash intent independently
+before mutation. For native stacks, establish destination and eligibility
+using the stack reference first.
 
-- Its actual destination differs from the base repository's default branch.
-  Name both, explain the possible stack, and confirm the target, even when
-  this skill was explicitly invoked. Do not retarget or merge dependencies
-  instead. For native stacks, apply the reference's destination and eligibility
-  rules first.
-- This skill was selected implicitly, the PR has multiple commits, and
-  squash intent has not been established. State the count and ask to combine
-  them. Explicit invocation of `$gh-pr-merge-squash` or a direct request to use
-  this named skill, or an applicable standing instruction to squash by default,
-  establishes that intent.
+| Confirmation needed when | Action |
+| --- | --- |
+| The actual destination differs from the base repository's default branch and has not already been confirmed. | Name both branches, explain the possible stack, and confirm the target, even when this skill was explicitly invoked. |
+| This skill was selected implicitly, the PR has multiple commits, and squash intent has not been established. | State the count and ask to combine the commits. |
 
-A generic "merge this PR" alone confirms neither condition. Combine applicable
-questions and wait for the answer.
+An explicit squash request, invocation of `$gh-pr-merge-squash`, a direct request
+to use this named skill, or an applicable standing instruction to squash by
+default establishes squash intent. A generic "merge this PR" alone confirms
+neither a non-default destination nor squash intent. Combine applicable questions
+and wait for the answer; do not repeat an established confirmation. Do not
+retarget the PR or merge dependencies instead.
 
 ## Merge on GitHub
 

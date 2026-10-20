@@ -34,3 +34,7 @@ Update a specific skill:
 ```shell
 gh skill update rust-conventions
 ```
+
+## Validation
+
+Run `gh skill publish --dry-run` to validate skill structure.
