@@ -35,33 +35,29 @@ published target to repair its message as incidental cleanup.
 ## Refresh dependencies before deletion
 
 Repeat the [stack and dependent discovery](../SKILL.md#detect-stacks-and-dependents)
-before deleting the local topic branch, including when none were found before
-merging. If discovery
-cannot be completed, retain the branch. If stack evidence or dependencies
-were found before or after merging, apply the
+before deleting the local topic branch, even if none were found before merging.
+If discovery cannot be completed, retain the branch. If stack evidence or
+dependencies were found before or after merging, apply the
 [stack reference's reconciliation and retirement rules](stacked-prs.md#reconcile-dependents-and-retire-the-merged-branch),
 including refreshing every recorded dependent PR.
 
 ## Synchronize the local target
 
-Before switching to or updating an existing local target, verify that its
-upstream corresponds to the verified landing repository and branch,
-rather than an obsolete intermediate base in a stack. Resolve the
-upstream remote's repository identity; a matching branch name or shared
-history is insufficient. If the upstream points elsewhere or the mapping
-cannot be established, leave the branch and its upstream unchanged,
-report incomplete synchronization, and skip its synchronization below.
-If the verified local target is checked out in another worktree,
-synchronize it there only if that worktree is clean. If it is dirty,
-leave it untouched and report incomplete synchronization; do not try to check out
-the target in the current worktree. If the target is not checked out in
-another worktree, use a clean current worktree and switch to the local
-target, creating it from the fetched remote-tracking ref if absent.
-In either safe case, update it with
-`git merge --ff-only --no-overwrite-ignore` against that
-ref. If the target has extra commits, diverges, or cannot be updated
-safely, preserve it and report incomplete synchronization; do not reset
-or merge it forcibly.
+Before switching to or updating an existing local target, resolve its upstream
+remote's repository identity and verify the landing repository and branch.
+A matching branch name or shared history is insufficient, especially with an
+obsolete intermediate stack base. If the mapping is wrong or unverifiable,
+leave the branch and upstream unchanged and report incomplete synchronization.
+Otherwise:
+
+- If checked out in another worktree, synchronize there only if clean;
+  leave a dirty worktree untouched rather than checking out its branch here.
+- Otherwise, use a clean current worktree and switch to the local target,
+  creating it from the fetched remote-tracking ref if absent.
+
+Fast-forward against that ref using the protected merge above. If the target
+has extra commits, diverges, or cannot be updated safely, preserve it and report
+incomplete synchronization; never reset or force a merge.
 
 ## Check the local topic branch
 
@@ -83,6 +79,4 @@ retain it and report that fact. Never remove a worktree as incidental
 cleanup. After these checks, delete the local topic branch. A squash may
 require `git branch -D` because the original commits are not ancestors
 of the target; use it only after proving integration and rechecking the
-local branch tip. For a stack, also satisfy the retirement criteria in
-[Stacked PRs](stacked-prs.md#reconcile-dependents-and-retire-the-merged-branch);
-the generic tip check alone is insufficient.
+local branch tip. The dependency checks above must also pass.

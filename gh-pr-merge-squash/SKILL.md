@@ -6,11 +6,11 @@ license: MIT
 
 # GitHub PR squash merge
 
-Merge the requested PR as exactly one commit on its current destination,
-without a merge commit; then fast-forward the local target and safely delete
-the local topic branch. Identify the actual destination and its repository's
-remote; do not assume `main` or `origin`. Explicit user instructions and
-repository rules take precedence.
+Merge only the requested PR as one commit on its current destination, without
+a merge commit; then fast-forward the local destination and safely delete the
+local topic branch.
+Do not assume `main` or `origin`. Explicit user instructions and repository
+rules take precedence.
 
 A merge request authorizes this workflow, subject to the confirmations below.
 Do not ask otherwise or repeat confirmation for the same PR and intent.
@@ -19,13 +19,12 @@ A request to inspect or prepare a merge does not authorize merging.
 ## Establish the scope
 
 - Resolve the repository and PR from the user's reference or current branch;
-  resolve ambiguity before merging. Record the URL, base and head repositories
-  and branches, exact head SHA, and commit count of this PR, not the whole
-  stack or an unrelated local branch.
+  resolve ambiguity before merging. Record its URL, base and head repositories
+  and branches, exact head SHA, and its own commit count, excluding the rest
+  of a stack or an unrelated local branch.
 - Stop for a draft or closed, unmerged PR. For an already merged PR, use its
-  recorded result and proceed to verification and cleanup: skip merge-only
-  readiness, stack eligibility, and intent checks, but still discover
-  dependents and apply all cleanup safeguards.
+  recorded result and proceed to [verification and cleanup](#verify-synchronize-and-report),
+  skipping merge-only readiness, eligibility, and intent checks.
 - Determine the base repository's default branch from current GitHub metadata,
   not the fork's default branch. Stop if it cannot be determined.
 - Inspect the diff, current checks, current review decision, mergeability,
@@ -39,9 +38,9 @@ A request to inspect or prepare a merge does not authorize merging.
 
 Read the PR's REST resource, including `stack`, on the verified host and base
 repository; local `gh stack view --json` cannot rule out a remote stack.
-The predecessor traversal stops at the native stack's declared base, or
-otherwise the base repository's default branch unless user or repository
-instructions establish another trunk.
+For predecessor traversal, the trunk is the native stack's declared base,
+otherwise the base repository's default branch unless instructions establish
+another trunk.
 
 With pagination, always find open dependent PRs in this PR's head repository,
 including forks; verify their `base.repo` and `base.ref` match its head repository
@@ -51,71 +50,64 @@ unmerged PRs. Stop traversal at the trunk even if PRs originate there. Check
 local stack catalogs and identified local dependents; record dependent PRs'
 base refs and head SHAs before merging.
 
-If stacks, candidate predecessors, local dependencies, or uncertain stack
-evidence appear, read [Stacked PRs](references/stacked-prs.md) before mutation.
-Qualify historical candidates there before treating them as dependencies.
-Otherwise do not load it. API errors are not evidence of absence; resolve
-uncertain membership before merging when stack evidence exists.
+Read [Stacked PRs](references/stacked-prs.md) before mutation only if discovery
+finds stacks, predecessor candidates, local dependencies, or uncertain stack
+evidence; use it to qualify historical candidates before treating them as
+dependencies. API errors are not evidence of absence; resolve uncertain
+membership before merging when stack evidence exists.
 
 ## Confirm the merge intent
 
-Before modifying branches, merging, or cleanup, ask if a merge remains to be
-performed and either condition applies:
+For an unmerged PR, obtain any required confirmation before mutation:
 
 - Its actual destination differs from the base repository's default branch.
   Name both, explain the possible stack, and confirm the target, even when
   this skill was explicitly invoked. Do not retarget or merge dependencies
   instead. For native stacks, apply the reference's destination and eligibility
-  rules before asking.
+  rules first.
 - This skill was selected implicitly, the PR has multiple commits, and
   squash intent has not been established. State the count and ask to combine
   them. Explicit invocation of `$gh-pr-merge-squash` or a direct request to use
-  this named skill expresses squash intent. An applicable standing instruction
-  to squash PRs by default also establishes squash intent; do not ask again
-  solely because this PR has multiple commits.
+  this named skill, or an applicable standing instruction to squash by default,
+  establishes that intent.
 
-A generic "merge this PR" alone confirms neither condition. Combine both
-questions when applicable and wait for the answer. Already merged PRs need neither
-confirmation for the remaining synchronization and guarded cleanup.
+A generic "merge this PR" alone confirms neither condition. Combine applicable
+questions and wait for the answer.
 
 ## Merge on GitHub
 
 Prefer GitHub's squash merge without first rewriting the topic branch. Do not
 rebase just for linear history. If rules, conflicts, or requested validation
-require updating the branch, use the appropriate workflow and recheck its
-head; any necessary force-push must use a lease against the inspected head.
-Before any worktree update, read and apply [local file protection](references/local-cleanup.md#protect-local-files),
-including protection of ignored files during switches and fast-forwards.
+require an update, recheck the head afterward and use a lease against the
+inspected head for any necessary force-push. Before any worktree update,
+read and apply [local file protection](references/local-cleanup.md#protect-local-files).
 
-Before submission, wait for applicable pending checks for up to five minutes
-unless the user specifies another duration. Poll with backoff from five to at
-most thirty seconds between requests. Start this window when first waiting
-for checks in this run; status or head changes do not restart it. At the
-deadline, refresh readiness once. If checks remain pending or readiness
-cannot be established, report the PR URL and latest known check states,
-then stop without submitting a merge or cleaning up branches.
+Wait for applicable pending checks for up to five minutes before submission,
+unless the user specifies another duration. Poll with backoff from five to
+thirty seconds. The window starts at the first check wait in this run;
+status or head changes do not restart it. At the deadline, refresh readiness
+once. If still pending or unverifiable, report the PR URL and latest check
+states; stop without submitting or cleaning up branches.
 
 Report failures, outstanding review requirements, conflicts, or unavailable
 readiness information; do not bypass them or use administrator overrides.
-Report blockers requiring changes beyond the merge request rather than
-silently expanding scope.
+Report out-of-scope blockers rather than expanding the merge request.
 
 Respect a configured merge queue: its method takes precedence over `--squash`.
 Before auto-merge or enqueueing, verify it satisfies the single-commit
 requirement; stop if incompatible or unverifiable.
 
-Choose a meaningful subject from the final diff and PR, following repository
-commit conventions. Add a body only for useful additional context. For direct
-merges, supply the message explicitly, including an empty body when appropriate;
-do not concatenate intermediate messages blindly. If an exact message is
-required, establish that the merge path can honor it before submitting, or
-report the limitation. Verify the actual resulting message during cleanup.
+Choose a meaningful subject from the final diff and PR under repository commit
+conventions, not a blind concatenation of intermediate messages. For direct
+merges, supply the subject and body explicitly; use an empty body unless extra
+context is useful. If an exact message is required, establish that the merge
+path can honor it before submitting, or report the limitation.
 
-Immediately before merging, refresh the PR and verify the checked head SHA,
-target repository and branch, and stack membership/order are unchanged. If
-changed, refresh scope and readiness, re-evaluate squash confirmation, and
-repeat target confirmation when required. For stacks, recheck eligibility
-under the reference; stop if another unmerged PR would be included.
+Immediately before every submission, refresh the PR and verify the checked
+head SHA, target repository/branch, and stack membership/order. If changed,
+refresh scope and readiness, re-evaluate squash intent, and reconfirm the target
+when required. For stacks, recheck eligibility; stop if another unmerged PR
+would be included.
 
 For an ordinary PR:
 
@@ -129,20 +121,16 @@ For native stacks, use the [asynchronous merge procedure](references/stacked-prs
 directly. Do not pass `--delete-branch`: remote deletion requires an explicit
 request or the repository's automatic policy.
 
-After a failed or uncertain attempt, read the PR state before retrying; do not
-retry an unchanged blocker. If the head changed, inspect and check it again
-and re-evaluate squash confirmation. Queued or auto-merge-enabled is not merged:
-read [Wait for merge completion](references/merge-completion.md) for asynchronous,
-queued, auto-merge, or resumed requests before observing completion or retrying.
+After a failed or uncertain attempt, read the PR state before retrying; never
+retry an unchanged blocker. For asynchronous, queued, auto-merge, or resumed
+requests, follow [Wait for merge completion](references/merge-completion.md)
+before observation or retry.
 
 ## Verify, synchronize, and report
 
-Once GitHub confirms the merge, read and follow [local verification and cleanup](references/local-cleanup.md),
-including for already merged PRs. It covers the resulting commit and message,
-fresh dependency discovery, protected worktree updates, fast-forwarding the
-verified local target, and guarded local topic deletion. Apply the stack
-reference's reconciliation and retirement rules when dependencies were found
-before or after merging.
+Once GitHub confirms the merge, including for already merged PRs, follow
+[local verification and cleanup](references/local-cleanup.md). It includes
+fresh dependency discovery and routes to stack reconciliation when needed.
 
 Report the PR URL, resulting commit, local target status, and whether the topic
 branch was deleted or retained and why. Distinguish merge success from incomplete
