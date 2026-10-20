@@ -18,6 +18,63 @@ For modules with submodules, prefer `foo.rs` over `foo/mod.rs`.
 
 ## Imports
 
+### Choosing what to import
+
+Prefer imports that keep module bodies readable. Import a commonly used type
+or trait directly, or import its module when that gives a useful short
+qualifier. Do not wait for a name to occur multiple times before importing it.
+
+- Import distinctive types directly: `Path`, `PathBuf`, `OsStr`, `OsString`,
+  `HashMap`, `HashSet`, `BTreeMap`, `BTreeSet`, `Rc`, `Arc`, `Mutex`, `Duration`,
+  `Instant`, etc. Prefer `Path` over `std::path::Path` or `path::Path` in
+  signatures and expressions.
+- Import utility modules such as `io`, `fs`, `env`, and `process` when useful.
+  Keep meaningful qualifiers such as `io::Result`, `io::Error`,
+  `io::ErrorKind`, and `fs::read_to_string`, rather than importing every
+  member directly. This can coexist with direct imports such as `File`,
+  `Read`, and `Write`: use `fs::{self, File}` or `io::{self, Read}`.
+- For formatting implementations, prefer `fmt::{self, Formatter}` and write
+  `Formatter` and `fmt::Result`. Import `Display` or `Debug` directly
+  when useful; retain a qualifier or alias when needed to avoid a collision
+  with a derive macro or another name.
+- Apply the same readability criterion to external crates and local modules.
+  A module qualifier can distinguish related APIs, as in `mpsc::Sender` and
+  `oneshot::Sender`, or identify a domain, as in `image::Error`.
+- Resolve collisions with a useful module qualifier or a descriptive alias,
+  such as `error::Error` or `Error as StdError`. For traits needed only for
+  method resolution, prefer `as _` when their name is otherwise unnecessary,
+  e.g. `use anyhow::Context as _;` or `use std::fmt::Write as _;`. Keep named
+  imports for traits used in bounds or implementations.
+
+These are defaults, not a ban on fully qualified paths. Keep one when it
+improves clarity or avoids a collision; occasional utility calls and derive
+macro paths need not all become imports. Import only what is used.
+
+For example:
+
+```rust
+use std::{
+    fmt::{self, Display, Formatter},
+    fs,
+    io,
+    path::Path,
+};
+
+fn read_config<P: AsRef<Path>>(path: P) -> io::Result<String> {
+    fs::read_to_string(path)
+}
+
+struct Label(String);
+
+impl Display for Label {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        f.write_str(&self.0)
+    }
+}
+```
+
+### Grouping and layout
+
 - For imports from the current module, prefer `use self::foo` over `use foo`.
 - Organize imports into three groups: standard library (`std`, `core`, `alloc`),
   external crates, and local imports (`self`, `super`, `crate`), in that order.
