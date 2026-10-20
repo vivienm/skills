@@ -85,10 +85,18 @@ head; any necessary force-push must use a lease against the inspected head.
 Before any worktree update, read and apply [local file protection](references/local-cleanup.md#protect-local-files),
 including protection of ignored files during switches and fast-forwards.
 
-Wait for applicable pending checks. Report failures, outstanding review
-requirements, conflicts, or unavailable readiness information; do not bypass
-them or use administrator overrides. Report blockers requiring changes beyond
-the merge request rather than silently expanding scope.
+Before submission, wait for applicable pending checks for up to five minutes
+unless the user specifies another duration. Poll with backoff from five to at
+most thirty seconds between requests. Start this window when first waiting
+for checks in this run; status or head changes do not restart it. At the
+deadline, refresh readiness once. If checks remain pending or readiness
+cannot be established, report the PR URL and latest known check states,
+then stop without submitting a merge or cleaning up branches.
+
+Report failures, outstanding review requirements, conflicts, or unavailable
+readiness information; do not bypass them or use administrator overrides.
+Report blockers requiring changes beyond the merge request rather than
+silently expanding scope.
 
 Respect a configured merge queue: its method takes precedence over `--squash`.
 Before auto-merge or enqueueing, verify it satisfies the single-commit
