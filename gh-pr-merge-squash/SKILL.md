@@ -27,10 +27,15 @@ Explicit user instructions and repository rules take precedence.
   local-only commits; do not include unrelated work or discard it to proceed.
   Use protected switches such as `git checkout --no-overwrite-ignore`.
 - If the PR is part of a stack or has dependent PRs, use `gh-stack` for the
-  stack workflow instead. Do not squash multiple PRs together or delete a
-  branch still needed by another PR. A non-default target alone is not a stack.
+  stack workflow instead. If that skill is unavailable, stop and report the
+  missing dependency before rewriting or pushing. Do not squash multiple PRs
+  together or delete a branch still needed by another PR. A non-default target
+  alone is not a stack.
   Do not merge other PRs without explicit instructions; report any unmerged
   predecessors before proceeding.
+- Before rewriting or pushing, verify that the repository allows rebase merging
+  and that any required merge queue can honor this workflow. If either is
+  incompatible, stop and report the limitation rather than changing methods.
 
 ## Prepare and push
 
@@ -55,11 +60,11 @@ Explicit user instructions and repository rules take precedence.
 
 ## Validate and merge
 
-Check CI, reviews, and mergeability on the pushed head. Wait for pending required
-checks for up to five minutes unless instructed otherwise. Report remaining
-blockers without bypassing rules, using `--admin`, or changing repository
-settings. If rebase merging is unavailable or a required merge queue cannot
-honor this workflow, report that limitation rather than silently changing methods.
+Check CI, reviews, and mergeability on the pushed head, and recheck compatibility
+with the repository's merge methods and any required merge queue. Wait for pending
+required checks for up to five minutes unless instructed otherwise. Report
+remaining blockers without bypassing rules, using `--admin`, changing repository
+settings, or switching merge methods.
 
 Immediately before merging, refresh the PR and confirm its head SHA and target
 still match the prepared version. If either changed, reassess before proceeding.
