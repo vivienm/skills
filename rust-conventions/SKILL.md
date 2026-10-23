@@ -1,6 +1,8 @@
 ---
 name: rust-conventions
-description: Apply personal Rust coding conventions when adding or substantially rewriting Rust code. Do not use to enforce style on unchanged code.
+description: >-
+  Apply personal Rust coding conventions when adding or substantially rewriting
+  Rust code. Do not use to enforce style on unchanged code.
 license: MIT
 ---
 

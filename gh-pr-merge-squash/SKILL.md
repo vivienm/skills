@@ -1,6 +1,8 @@
 ---
 name: gh-pr-merge-squash
-description: Merge a GitHub PR by squashing locally, rebasing onto its up-to-date target, pushing with a lease, and using rebase merge with branch deletion.
+description: >-
+  Merge a GitHub PR by squashing locally, rebasing onto its up-to-date target,
+  pushing with a lease, and using rebase merge with branch deletion.
 license: MIT
 ---
 
@@ -60,11 +62,11 @@ Explicit user instructions and repository rules take precedence.
 
 ## Validate and merge
 
-Check CI, reviews, and mergeability on the pushed head, and recheck compatibility
-with the repository's merge methods and any required merge queue. Wait for pending
-required checks for up to five minutes unless instructed otherwise. Report
-remaining blockers without bypassing rules, using `--admin`, changing repository
-settings, or switching merge methods.
+Check CI, reviews, and mergeability on the pushed head, and recheck
+compatibility with the repository's merge methods and any required merge queue.
+Wait for pending required checks for up to five minutes unless instructed
+otherwise. Report remaining blockers without bypassing rules, using `--admin`,
+changing repository settings, or switching merge methods.
 
 Immediately before merging, refresh the PR and confirm its head SHA and target
 still match the prepared version. If either changed, reassess before proceeding.
