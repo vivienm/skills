@@ -4,7 +4,6 @@ My personal agent skills. Each skill lives in its own directory at the repositor
 
 ## Available skills
 
-- [gh-pr-merge-squash](gh-pr-merge-squash/SKILL.md): Squash a PR locally, rebase onto its up-to-date target, push with a lease, then rebase-merge and delete the branch.
 - [rust-conventions](rust-conventions/SKILL.md): Conventions for adding or substantially rewriting Rust code.
 
 ## Installation
