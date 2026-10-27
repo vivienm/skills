@@ -18,8 +18,8 @@ unchanged. Do not perform unrelated style cleanups.
 
 For modules with submodules, prefer `foo.rs` over `foo/mod.rs`.
 
-Place `use` imports before `mod foo;` declarations unless repository conventions
-specify otherwise; preserve any ordering required by macros.
+Place `use` imports before `mod foo;` declarations; preserve any ordering required
+by macros.
 
 ## Imports
 
@@ -38,21 +38,19 @@ qualifier. Do not wait for a name to occur multiple times before importing it.
   member directly. This can coexist with direct imports such as `File`,
   `Read`, and `Write`: use `fs::{self, File}` or `io::{self, Read}`.
 - For formatting implementations, prefer `fmt::{self, Formatter}` and write
-  `Formatter` and `fmt::Result`. Import `Display` or `Debug` directly
-  when useful; retain a qualifier or alias when needed to avoid a collision
-  with a derive macro or another name.
+  `Formatter` and `fmt::Result`. Import `Display` or `Debug` directly when useful.
 - Apply the same readability criterion to external crates and local modules.
   A module qualifier can distinguish related APIs, as in `mpsc::Sender` and
   `oneshot::Sender`, or identify a domain, as in `image::Error`.
-- Resolve collisions with a useful module qualifier or a descriptive alias,
-  such as `error::Error` or `Error as StdError`. For traits needed only for
-  method resolution, prefer `as _` when their name is otherwise unnecessary,
-  e.g. `use anyhow::Context as _;` or `use std::fmt::Write as _;`. Keep named
-  imports for traits used in bounds or implementations.
+- For traits needed only for method resolution, prefer `as _` when their name
+  is otherwise unnecessary, e.g. `use anyhow::Context as _;` or
+  `use std::fmt::Write as _;`. Keep named imports for traits used in bounds or
+  implementations.
 
-These are defaults, not a ban on fully qualified paths. Keep one when it
-improves clarity or avoids a collision; occasional utility calls and derive
-macro paths need not all become imports. Import only what is used.
+Resolve collisions, including with derive macros, with a meaningful module
+qualifier or descriptive alias, such as `error::Error` or `Error as StdError`.
+Keep fully qualified paths when they improve clarity; occasional utility calls
+and derive macro paths need not all become imports. Import only what is used.
 
 For example:
 
@@ -90,10 +88,6 @@ use crate::{
     storage::Store,
 };
 ```
-
-Keep this formatting local to imports you add or substantially rewrite;
-do not regroup existing imports or reformat unrelated code solely to enforce
-these preferences.
 
 ## Derives
 
