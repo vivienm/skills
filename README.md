@@ -48,3 +48,9 @@ gh skill update rust-conventions
 ## Validation
 
 Run `gh skill publish --dry-run` to validate skill structure.
+
+Check Markdown formatting and prose wrapping at 80 columns:
+
+```shell
+npx --yes prettier --check --prose-wrap always --print-width 80 '**/*.md'
+```

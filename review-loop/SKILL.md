@@ -1,11 +1,10 @@
 ---
 name: review-loop
 description: >-
-  Run iterative review-and-fix passes over scoped changes, including relevant
-  non-blocking improvements, with a fresh independent reviewer per pass.
-  Requires native subagents. Use when the user requests repeated review and
-  correction of changes, including after implementation. A one-off review or
-  reading external review comments does not need this loop.
+  Run repeated independent review-and-fix passes over scoped changes, including
+  useful non-blocking improvements. Use when the user requests iterative review
+  and correction, including after implementation. Requires native subagents;
+  excludes one-off reviews and reading external review comments.
 license: MIT
 ---
 
