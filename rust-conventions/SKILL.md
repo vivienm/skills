@@ -29,9 +29,9 @@ Prefer imports that keep module bodies readable. Import a commonly used type
 or trait directly, or import its module when that gives a useful short
 qualifier. Do not wait for a name to occur multiple times before importing it.
 
-- Import distinctive types directly, such as `Path`, `HashMap`, `Arc`, and
-  `Duration`. Prefer `Path` over `std::path::Path` or `path::Path` in signatures
-  and expressions.
+- Import distinctive types directly, such as `Path`, `HashMap`, `Arc`,
+  `Duration`, and `PhantomData`. Prefer `Path` over `std::path::Path` or
+  `path::Path` in signatures and expressions.
 - Import utility modules such as `io`, `fs`, `env`, and `process` when useful.
   Keep meaningful qualifiers such as `io::Result`, `io::Error`,
   `io::ErrorKind`, and `fs::read_to_string`, rather than importing every
