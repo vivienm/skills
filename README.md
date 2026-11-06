@@ -5,6 +5,8 @@ repository root.
 
 ## Available skills
 
+- [github-conflicts](github-conflicts/SKILL.md): Resolve GitHub PR conflicts with
+  a cascading rebase for stacks or a base-branch merge for standalone PRs.
 - [review-loop](review-loop/SKILL.md): Independent review and fix passes over a
   scoped change set, including relevant non-blocking improvements, until
   convergence or a pass limit. Requires native subagents.
