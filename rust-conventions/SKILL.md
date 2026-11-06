@@ -8,11 +8,9 @@ license: MIT
 
 # Rust conventions
 
-Follow these preferences unless repository instructions specify otherwise.
-
-Apply them only to code you add or substantially rewrite. Do not flag or
-change existing code solely to enforce them, including code copied or moved
-unchanged. Do not perform unrelated style cleanups.
+Apply these preferences only to code you add or substantially rewrite, unless
+repository instructions specify otherwise. Do not flag or change existing code
+solely to enforce them, including code copied or moved unchanged.
 
 ## Modules
 
