@@ -5,8 +5,8 @@ repository root.
 
 ## Available skills
 
-- [github-conflicts](github-conflicts/SKILL.md): Resolve GitHub PR conflicts with
-  a cascading rebase for stacks or a base-branch merge for standalone PRs.
+- [github-conflicts](github-conflicts/SKILL.md): Resolve GitHub PR conflicts
+  with a cascading rebase for stacks or a base-branch merge for standalone PRs.
 - [review-loop](review-loop/SKILL.md): Independent review and fix passes over a
   scoped change set, including relevant non-blocking improvements, until
   convergence or a pass limit. Requires native subagents.
@@ -16,6 +16,10 @@ repository root.
 ## Installation
 
 Install with the [GitHub CLI](https://cli.github.com/manual/gh_skill_install).
+
+For stacked PRs, `github-conflicts` also requires the
+[`gh-stack` skill](https://github.com/github/gh-stack/tree/main/skills/gh-stack)
+and the [`gh stack` extension](https://github.com/github/gh-stack#installation).
 
 Install all skills:
 
