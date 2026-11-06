@@ -16,32 +16,33 @@ solely to enforce them, including code copied or moved unchanged.
 
 For modules with submodules, prefer `foo.rs` over `foo/mod.rs`.
 
-Place `use` imports before `mod foo;` declarations; preserve any ordering required
-by macros.
+Place `use` imports before `mod foo;` declarations; preserve any ordering
+required by macros.
 
 ## Imports
 
 ### Choosing what to import
 
-Prefer imports that keep module bodies readable. Import a commonly used type
-or trait directly, or import its module when that gives a useful short
-qualifier. Do not wait for a name to occur multiple times before importing it.
+Prefer imports that keep module bodies readable. Import a commonly used type or
+trait directly, or import its module when that gives a useful short qualifier.
+Do not wait for a name to occur multiple times before importing it.
 
 - Import distinctive types directly, such as `Path`, `HashMap`, `Arc`,
   `Duration`, and `PhantomData`. Prefer `Path` over `std::path::Path` or
   `path::Path` in signatures and expressions.
 - Import utility modules such as `io`, `fs`, `env`, and `process` when useful.
-  Keep meaningful qualifiers such as `io::Result`, `io::Error`,
-  `io::ErrorKind`, and `fs::read_to_string`, rather than importing every
-  member directly. This can coexist with direct imports such as `File`,
-  `Read`, and `Write`: use `fs::{self, File}` or `io::{self, Read}`.
+  Keep meaningful qualifiers such as `io::Result`, `io::Error`, `io::ErrorKind`,
+  and `fs::read_to_string`, rather than importing every member directly. This
+  can coexist with direct imports such as `File`, `Read`, and `Write`: use
+  `fs::{self, File}` or `io::{self, Read}`.
 - For formatting implementations, prefer `fmt::{self, Formatter}` and write
-  `Formatter` and `fmt::Result`. Import `Display` or `Debug` directly when useful.
-- Apply the same readability criterion to external crates and local modules.
-  A module qualifier can distinguish related APIs, as in `mpsc::Sender` and
+  `Formatter` and `fmt::Result`. Import `Display` or `Debug` directly when
+  useful.
+- Apply the same readability criterion to external crates and local modules. A
+  module qualifier can distinguish related APIs, as in `mpsc::Sender` and
   `oneshot::Sender`, or identify a domain, as in `image::Error`.
-- For traits needed only for method resolution, prefer `as _` when their name
-  is otherwise unnecessary, e.g. `use anyhow::Context as _;` or
+- For traits needed only for method resolution, prefer `as _` when their name is
+  otherwise unnecessary, e.g. `use anyhow::Context as _;` or
   `use std::fmt::Write as _;`. Keep named imports for traits used in bounds or
   implementations.
 
@@ -68,8 +69,8 @@ fn read_config<P: AsRef<Path>>(path: P) -> io::Result<String> {
   Separate groups with a blank line.
 - Within each group, combine imports from the same crate into a single `use`
   declaration, using nested brace trees to factor out shared path prefixes.
-  Apply the same grouping to local imports sharing a `crate`, `self`, or
-  `super` root. Keep imports with different visibility or attributes separate.
+  Apply the same grouping to local imports sharing a `crate`, `self`, or `super`
+  root. Keep imports with different visibility or attributes separate.
 
 For example:
 
@@ -89,14 +90,14 @@ use crate::{
 
 ## Path parameters
 
-When practical, functions and methods that accept a filesystem path should use
-a generic parameter bounded by `AsRef<Path>` instead of `&Path`, especially in
+When practical, functions and methods that accept a filesystem path should use a
+generic parameter bounded by `AsRef<Path>` instead of `&Path`, especially in
 public APIs. Use `path.as_ref()` inside the body when a `&Path` is needed.
 
 ## Derives
 
 When deriving any of the following traits, use this relative order: `Copy`,
 `Clone`, `Eq`, `PartialEq`, `Ord`, `PartialOrd`, `Hash`, `Debug`, `Display`,
-`Default`. Place any other derived traits after these, with traits from
-external crates (e.g. `Serialize`, `Deserialize`) first, followed by traits
-from the local crate (e.g. `CrateSpecificTrait`).
+`Default`. Place any other derived traits after these, with traits from external
+crates (e.g. `Serialize`, `Deserialize`) first, followed by traits from the
+local crate (e.g. `CrateSpecificTrait`).

@@ -1,11 +1,15 @@
 # Personal skills
 
-My personal agent skills. Each skill lives in its own directory at the repository root.
+My personal agent skills. Each skill lives in its own directory at the
+repository root.
 
 ## Available skills
 
-- [review-loop](review-loop/SKILL.md): Independent review and fix passes over a scoped change set, including relevant non-blocking improvements, until convergence or a pass limit.
-- [rust-conventions](rust-conventions/SKILL.md): Conventions for adding or substantially rewriting Rust code.
+- [review-loop](review-loop/SKILL.md): Independent review and fix passes over a
+  scoped change set, including relevant non-blocking improvements, until
+  convergence or a pass limit. Requires native subagents.
+- [rust-conventions](rust-conventions/SKILL.md): Conventions for adding or
+  substantially rewriting Rust code.
 
 ## Installation
 
