@@ -2,7 +2,8 @@
 name: review-loop
 description: >-
   Run iterative review-and-fix passes over a scoped code change set, including
-  relevant non-blocking improvements, with a fresh independent reviewer per pass.
+  relevant non-blocking improvements. Requires native subagents for a fresh
+  independent reviewer per pass.
   Use when the user requests repeated review and correction of changes, including
   after implementation. A one-off review or reading external review comments does
   not need this loop.
@@ -86,10 +87,11 @@ or passing tests alone do not establish convergence.
 Any edit after review, including final polish, needs another pass; report edits
 made after the last allowed pass as independently unreviewed.
 
-Stop reviewing when the limit is reached, review cannot complete, a necessary
-decision or check is blocked, or the same substantive finding survives two
-attempted fixes without progress. Do not cycle on reworded findings or equivalent
-implementations.
+Transient reviewer failures may be retried with a fresh reviewer within the pass
+limit. Stop reviewing when the limit is reached, a reviewer failure cannot be
+resolved, a necessary decision or check is blocked, or the same substantive
+finding survives two attempted fixes without progress. Do not cycle on reworded
+findings or equivalent implementations.
 Useful independent in-scope fixes may continue after the budget is exhausted.
 
 Report status (converged, limit reached, stalled, or blocked), checks, remaining

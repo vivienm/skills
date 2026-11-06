@@ -95,14 +95,6 @@ When practical, functions and methods that accept a filesystem path should use
 a generic parameter bounded by `AsRef<Path>` instead of `&Path`, especially in
 public APIs. Use `path.as_ref()` inside the body when a `&Path` is needed.
 
-```rust
-// Avoid when a generic parameter is practical:
-fn foobar(path: &Path) { /* ... */ }
-
-// Prefer:
-fn foobar<P: AsRef<Path>>(path: P) { /* ... */ }
-```
-
 ## Derives
 
 When deriving any of the following traits, use this relative order: `Copy`,
