@@ -9,9 +9,6 @@ license: MIT
 
 # GitHub conflicts
 
-Follow explicit user instructions and repository requirements when they differ
-from these defaults.
-
 ## Identify the branches and workflow
 
 Identify the target PR, its head branch and repository, and its actual base
@@ -29,6 +26,11 @@ repository against local gh-stack state (`gh stack view --json`) and GitHub
 stack metadata as needed. The command reports the current stack, which may not
 contain the target. A non-default base does not by itself imply a stack. Missing
 local tracking or a failed lookup does not prove that the PR is standalone.
+Resolve uncertain stack membership before choosing either workflow.
+
+During resolution, preserve the intent of both changes rather than blindly
+accepting either side. Check each resolved path for leftover conflict markers
+before staging it, and confirm no unmerged paths remain before continuing.
 
 ## Stacked PR
 
@@ -60,9 +62,8 @@ operation.
 
 ## Standalone PR
 
-Merge the latest base into the PR's head branch. This matches GitHub's
-[Resolve conflicts workflow](https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/resolving-a-merge-conflict-on-github),
-which merges the entire base branch into the head branch.
+Merge the latest base into the PR's head branch, following GitHub's
+[Resolve conflicts workflow](https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/resolving-a-merge-conflict-on-github).
 
 Check out the PR head, incorporate any remote head updates without discarding
 local work, then fetch and merge the actual base:
@@ -80,9 +81,11 @@ the merge.
 
 ## Verify and publish
 
-Resolve conflicts according to the intent of both changes; do not blindly accept
-all of either side. Check that no unmerged paths or conflict markers remain,
-inspect the resulting changes, and run relevant repository checks.
+Inspect the resulting changes and run relevant repository checks. Before
+publishing, compare each outgoing branch with its remote head and confirm that
+all outgoing commits belong to the requested work; a clean worktree does not
+guarantee this. `gh stack push` covers all active branches in the stack, even
+after a rebase limited with `--upstack`.
 
 When publishing is in scope, use `gh stack push` for a stack or a normal
 `git push <head-remote> HEAD:<head-branch>` for a standalone PR. If a push
