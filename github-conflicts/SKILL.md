@@ -11,47 +11,35 @@ license: MIT
 
 ## Identify the branches and workflow
 
-Identify the target PR, its head branch and repository, and its actual base
-branch and repository. Do not assume the base is `main` or `master`, or that
-head and base use the same remote; fork PRs often use different remotes.
+Read the target PR's head and base repositories and branch names. Match the
+remotes to those repositories, accounting for forks and non-default bases.
 
-Inspect the working tree and any operation already in progress. Resume a
-resolution only if it belongs to the target PR, using the original tool in the
-worktree holding the paused operation. Leave unrelated operations and changes
-intact; use a separate clean worktree when needed. Start new merges or rebases
-from a clean worktree and stage only resolved paths.
+Check the worktree for local changes and in-progress operations. Resume a paused
+merge or rebase only if it belongs to the target PR, using the original tool in
+the worktree holding it. Start new operations in a clean worktree with no
+operation in progress. Use a separate worktree to preserve unrelated changes or
+operations when needed.
 
-Determine stack membership by matching the target PR's head branch and
-repository against local gh-stack state (`gh stack view --json`) and GitHub
-stack metadata as needed. The command reports the current stack, which may not
-contain the target. A non-default base does not by itself imply a stack. Missing
-local tracking or a failed lookup does not prove that the PR is standalone.
-Resolve uncertain stack membership before choosing either workflow.
+Check stack membership using `gh stack view --json` or GitHub stack metadata.
+Match the target by PR URL when available, or by head branch and repository. The
+local command shows only the current stack, so a missing match is inconclusive.
+A non-default base alone is insufficient evidence of a stack. Resolve uncertain
+membership before choosing a workflow.
 
-During resolution, preserve the intent of both changes rather than blindly
-accepting either side. Check each resolved path for leftover conflict markers
-before staging it, and confirm no unmerged paths remain before continuing.
+Preserve the intent of both changes. Check resolved paths for conflict markers,
+stage only those paths, and confirm no unmerged paths remain before continuing.
 
 ## Stacked PR
 
-Load and follow the `gh-stack` skill for stack checkout, remote selection,
-worktree ownership, and recovery. If the skill or extension is unavailable,
-report the missing dependency before attempting stack operations. Keep the
-stack's linear ancestry by using a cascading rebase rather than merging the base
-branch into a stack layer.
+Use the `gh-stack` skill for checkout, remote selection, worktree ownership, and
+recovery. Report a missing skill or extension before attempting stack
+operations. Use a cascading rebase to preserve the stack's linear ancestry.
 
-Check out the branch at the start of the range that needs rebasing:
-
-```shell
-gh stack rebase --upstack
-# If the rebase stops on conflicts, resolve them in the reported worktree, then:
-git add -- <resolved-paths>
-gh stack rebase --continue
-```
-
-Repeat resolution and continuation until the operation completes. Do not create
-a separate resolution commit or substitute `git rebase --continue` for the stack
-continuation command.
+Check out the lowest branch that needs rebasing and run
+`gh stack rebase --upstack`. If it stops on conflicts, resolve and stage them in
+the reported worktree without creating a separate commit. Continue with
+`gh stack rebase --continue` instead of `git rebase --continue`. Repeat until
+the rebase completes.
 
 `--upstack` limits the operation to the current branch through the top. If
 changes to the trunk require lower layers to be refreshed too, use
@@ -62,36 +50,30 @@ operation.
 
 ## Standalone PR
 
-Merge the latest base into the PR's head branch, following GitHub's
-[Resolve conflicts workflow](https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/resolving-a-merge-conflict-on-github).
-
-Check out the PR head, incorporate any remote head updates without discarding
-local work, then fetch and merge the actual base:
+Check out the PR head and incorporate any remote head updates without discarding
+local work. Set `base_remote` and `base_branch` to the PR's actual base remote
+and branch, then fetch and merge that branch:
 
 ```shell
-git fetch <base-remote> <base-branch> && git merge --no-edit FETCH_HEAD
-# If the merge stops on conflicts, resolve them, then:
-git add -- <resolved-paths>
-git commit --no-edit
+git fetch "$base_remote" "refs/heads/$base_branch" &&
+  git merge --no-edit FETCH_HEAD
 ```
 
-Finish the merge commit only when a merge is pending. Do not rebase or
-force-push a standalone PR by default. Use `git merge --abort` when abandoning
-the merge.
+If the merge stops on conflicts, resolve and stage them, then finish the pending
+merge with `git commit --no-edit`. Use `git merge --abort` to abandon the merge.
 
 ## Verify and publish
 
-Inspect the resulting changes and run relevant repository checks. Before
-publishing, compare each outgoing branch with its remote head and confirm that
-all outgoing commits belong to the requested work; a clean worktree does not
-guarantee this. `gh stack push` covers all active branches in the stack, even
-after a rebase limited with `--upstack`.
+Inspect the result and run relevant checks. Before publishing, compare each
+outgoing branch with its current remote head. Verify that all commits the push
+would add or replace are in scope. `gh stack push` covers all active branches,
+even after a rebase limited with `--upstack`.
 
-When publishing is in scope, use `gh stack push` for a stack or a normal
-`git push <head-remote> HEAD:<head-branch>` for a standalone PR. If a push
-fails, inspect remote state before retrying; a stack push may already have
-updated some branches. Reconcile remote changes rather than overwriting them.
-Resolving conflicts does not itself authorize merging or closing the PR.
+When publishing is in scope, use `gh stack push` for a stack. For a standalone
+PR, push normally to its head repository and branch using
+`git push "$head_remote" "HEAD:refs/heads/$head_branch"`. After a failed push,
+check which remote refs changed and reconcile before retrying. Resolving
+conflicts does not authorize merging or closing the PR.
 
 Report the workflow used, affected branches, checks, and publication status of
 each branch, including any partial push.

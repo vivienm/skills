@@ -10,81 +10,65 @@ license: MIT
 
 # Review loop
 
-The main agent owns decisions, fixes, and verification; native subagents review
-independently. If unavailable, report the limitation instead of substituting
-self-review, separate user-owned chats, or another CLI/plugin.
-
-Finish any requested implementation and appropriate checks before starting.
+Finish the requested implementation and checks first. The main agent owns
+decisions, fixes, and verification. Use native subagents for independent
+reviews. If they are unavailable, report the limitation and stop the loop.
 
 ## Establish the review target
 
-Establish requirements, repository instructions, and the exact change set; ask
-only if scope remains unclear. State the scope and pass limit: **five passes**
-by default, including the final review. Every reviewer launch counts, including
-interrupted, failed, or stale reviews.
+Identify the requirements, repository instructions, and exact change set. State
+the scope and pass limit, **five passes** by default. Every reviewer launch
+counts, including the final review and failed, interrupted, or stale reviews.
 
-Fix the baseline for the entire loop: resolve the intended branch comparison to
-a commit (using the merge base when appropriate), or record the starting HEAD
-for uncommitted work. Do not assume `HEAD~1` or the tracking branch is the base.
-Include in-scope staged, unstaged, and untracked changes and loop fixes, even
-for an originally committed target.
+Keep one baseline commit throughout. For a branch comparison, resolve the
+intended base, using the merge base when appropriate. For uncommitted work,
+record the starting HEAD. Include all in-scope staged, unstaged, and untracked
+changes and subsequent fixes, even for an originally committed target.
 
-Preserve unrelated work; supporting code may be inspected. Do not commit, reset,
-stash, push, or publish just to run the loop. An empty or inaccessible target
-cannot receive a clean review.
+Preserve unrelated work. Do not commit, reset, stash, push, or publish just to
+run the loop. An empty or inaccessible target cannot receive a clean review.
 
-Keep a compact ledger of attempted and completed passes, reviewed versions,
-findings and decisions, edits, checks, and open points. Use an existing task
-record or temporary file; do not add a tracked log unless requested.
+Record attempted and completed passes, target versions, findings, decisions,
+fixes, checks, and open points in the task record or a temporary file.
 
 ## Run each pass
 
-1. **Brief and spawn a fresh reviewer.** Include requirements, repository path
-   and instructions, fixed baseline, exact current target including in-scope
-   uncommitted changes, check results, and relevant prior ledger entries.
-   Present previous conclusions for verification, without persuasive rationale.
+1. **Spawn a fresh reviewer.** Supply the requirements, repository path and
+   instructions, fixed baseline, exact current target, check results, and
+   relevant prior decisions. Present earlier conclusions neutrally for
+   verification. Start without the implementation conversation (for example,
+   `fork_turns="none"`) and inherit model and reasoning settings unless the user
+   specifies otherwise.
 
-   Require read-only inspection of the full scoped patch and supporting context,
-   including previous fixes, dismissals, and possible regressions; do not
-   delegate another loop. Request defects and useful non-blocking suggestions
-   separately, with locations, impact or benefit, evidence, and suggested
-   changes. Exclude unsupported concerns, quotas, and preferences contrary to
-   local conventions. Ask for coverage limitations and an explicit statement
-   when no actionable changes remain.
+   Request read-only review of the full scoped patch and supporting context,
+   including prior fixes, dismissals, and possible regressions. The reviewer
+   performs a single pass. Ask for defects and useful non-blocking suggestions
+   separately, with locations, evidence, impact or benefit, and proposed
+   changes. Ask for coverage limitations and an explicit verdict when no
+   actionable changes remain. Keep the target fixed during the pass. A failed,
+   partial, timed-out, or stale review cannot establish convergence.
 
-   Launch with the complete brief and no implementation conversation (for
-   example, `fork_turns="none"`); never resume a reviewer. Inherit current model
-   and reasoning settings unless the user specifies otherwise. Keep the target
-   unchanged while waiting; if it changes, review the new version within the
-   remaining budget. Failed, partial, or timed-out reviews provide no approval.
+2. **Triage findings.** Check each against the code, requirements, and local
+   conventions. Accept relevant fixes and worthwhile improvements. Record
+   whether each finding is accepted, rejected, or unresolved, with the evidence
+   or tradeoff behind the decision.
 
-2. **Triage every finding** against code, requirements, and local conventions.
-   Accept relevant fixes and worthwhile improvements; non-blocking status alone
-   does not justify dismissal. Avoid speculative or unrelated changes. Record
-   each decision and its reason: accepted, rejected, or unresolved. Support
-   rejections with evidence or an explicit tradeoff. Defer decisions requiring
-   user input without inventing needs.
-
-3. **Fix and verify** accepted findings with focused edits and required or
-   otherwise relevant checks. Record fixes and carry failed or unavailable
-   checks forward, distinguishing existing failures from regressions. Start
-   another pass within the limit after edits or when rejections need validation.
+3. **Fix and verify.** Make focused edits and rerun relevant checks. Record
+   failed or unavailable checks, distinguishing existing failures from
+   regressions. Review again within the limit if the target changed or a
+   rejection needs validation.
 
 ## Stop and report
 
-Converge only when a completed independent review of the **current final
-version** recommends no further actionable changes, all findings have justified
-dispositions, and required checks pass. The reviewer may accept evidence-backed
-rejections; disputed or deferred points are not unreserved approval. Scores,
-silence, or passing tests alone do not establish convergence. Any edit after
-review, including polish, needs another pass; otherwise report it as
-independently unreviewed.
+Converge only when an independent review of the **final version** finds no
+actionable changes, all findings are resolved, and required checks pass. The
+reviewer may accept evidence-backed rejections. Report edits outside the last
+completed review as independently unreviewed.
 
-Retry transient reviewer failures within the pass limit. Stop when the limit is
-reached, a reviewer failure cannot be resolved, a necessary decision or check is
-blocked, or the same substantive finding survives two attempted fixes without
-progress. Do not cycle on reworded findings or equivalent implementations.
-Useful in-scope fixes may continue after the budget is exhausted.
+Retry transient reviewer failures within the pass limit. Stop the loop at the
+limit, on a persistent reviewer failure or blocked decision or check, or when
+two attempts to fix the same finding make no progress. Useful in-scope fixes may
+continue after the limit.
 
 Report status (converged, limit reached, stalled, or blocked), checks, remaining
 issues, significant decisions and reasons, and independently unreviewed edits.

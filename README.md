@@ -1,17 +1,15 @@
 # Personal skills
 
-My personal agent skills. Each skill lives in its own directory at the
-repository root.
+Personal agent skills. Each skill has its own top-level directory.
 
 ## Available skills
 
-- [github-conflicts](github-conflicts/SKILL.md): Resolve GitHub PR conflicts
-  with a cascading rebase for stacks or a base-branch merge for standalone PRs.
+- [github-conflicts](github-conflicts/SKILL.md): Resolve conflicts in stacked
+  and standalone GitHub pull requests.
 - [python-conventions](python-conventions/SKILL.md): Conventions for adding or
   substantially rewriting Python code.
-- [review-loop](review-loop/SKILL.md): Independent review and fix passes over a
-  scoped change set, including relevant non-blocking improvements, until
-  convergence or a pass limit. Requires native subagents.
+- [review-loop](review-loop/SKILL.md): Iterate on a change set with independent
+  reviews by native subagents.
 - [rust-conventions](rust-conventions/SKILL.md): Conventions for adding or
   substantially rewriting Rust code.
 
@@ -51,7 +49,7 @@ gh skill update rust-conventions
 
 Run `gh skill publish --dry-run` to validate skill structure.
 
-Check Markdown formatting and prose wrapping at 80 columns:
+For a one-off check of Markdown formatting and prose wrapping at 80 columns:
 
 ```shell
 npx --yes prettier --check --prose-wrap always --print-width 80 '**/*.md'

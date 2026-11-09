@@ -8,8 +8,8 @@ license: MIT
 
 # Python conventions
 
-Apply these preferences to new or substantially rewritten code. Repository
-instructions take precedence.
+Follow repository instructions first. Apply these preferences only to new or
+substantially rewritten code.
 
 ## Regular expressions
 

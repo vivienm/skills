@@ -8,24 +8,22 @@ license: MIT
 
 # Rust conventions
 
-Apply these preferences only to code you add or substantially rewrite, unless
-repository instructions specify otherwise. Do not flag or change existing code
-solely to enforce them, including code copied or moved unchanged.
+Follow repository instructions first. Apply these preferences only to new or
+substantially rewritten code. This excludes code copied or moved unchanged.
 
 ## Modules
 
 For modules with submodules, prefer `foo.rs` over `foo/mod.rs`.
 
-Place `use` imports before `mod foo;` declarations; preserve any ordering
+Place `use` imports before `mod foo;` declarations, preserving any ordering
 required by macros.
 
 ## Imports
 
 ### Choosing what to import
 
-Prefer imports that keep module bodies readable. Import a commonly used type or
-trait directly, or import its module when that gives a useful short qualifier.
-Do not wait for a name to occur multiple times before importing it.
+Prefer direct imports or short, meaningful module qualifiers for types and
+traits, even when used only once.
 
 - Import distinctive types directly, such as `Path`, `HashMap`, `Arc`,
   `Duration`, and `PhantomData`. Prefer `Path` over `std::path::Path` or
