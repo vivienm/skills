@@ -7,6 +7,8 @@ repository root.
 
 - [github-conflicts](github-conflicts/SKILL.md): Resolve GitHub PR conflicts
   with a cascading rebase for stacks or a base-branch merge for standalone PRs.
+- [python-conventions](python-conventions/SKILL.md): Conventions for adding or
+  substantially rewriting Python code.
 - [review-loop](review-loop/SKILL.md): Independent review and fix passes over a
   scoped change set, including relevant non-blocking improvements, until
   convergence or a pass limit. Requires native subagents.
