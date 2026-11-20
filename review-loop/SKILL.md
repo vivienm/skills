@@ -32,8 +32,8 @@ work and staging.
    defects and worthwhile in-scope suggestions. Request locations, evidence,
    coverage limits, and a verdict.
 2. Keep the target stable and discard the verdict if it changed during review.
-   Evaluate findings against the requirements and record why you accept,
-   dismiss, or defer them.
+   Evaluate findings against the requirements. Record the reasons for
+   non-obvious decisions and any findings still open.
 3. Apply focused fixes and worthwhile in-scope improvements. Rerun relevant
    checks, and use another pass to review changes or disputed decisions within
    the limit.

@@ -8,8 +8,8 @@ license: MIT
 
 # Rust conventions
 
-Follow repository instructions first. Apply these preferences only to new or
-substantially rewritten code. This excludes code copied or moved unchanged.
+Follow repository instructions and established local style first. Apply these
+preferences only to new or substantially rewritten code.
 
 ## Modules
 

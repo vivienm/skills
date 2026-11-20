@@ -8,8 +8,8 @@ license: MIT
 
 # Bash conventions
 
-Follow repository instructions first. Apply these preferences only to new or
-substantially rewritten Bash code.
+Follow repository instructions and established local style first. Apply these
+preferences only to new or substantially rewritten code.
 
 - Use `set -euo pipefail` at the start of Bash scripts that run in their own
   process.
