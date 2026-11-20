@@ -13,8 +13,9 @@ license: MIT
 Verify that the PR is open and identify its head and base repositories and refs.
 Determine whether the PR belongs to a stack before choosing a workflow. Look for
 the PR in `gh stack view --json` in the relevant checkout. If no local entry
-matches, check the PR's `stack` field in the [GitHub REST API]. A failed lookup
-leaves stack membership undetermined.
+matches, check the PR's `stack` field in the [GitHub REST API]. Use the
+standalone workflow only if the API request succeeds and returns no stack
+object.
 
 Start in a clean worktree and preserve unrelated work. Resume an operation only
 if it matches the target PR and all affected branches are in scope. Use the

@@ -20,28 +20,17 @@ required by macros.
 
 ## Imports
 
-### Choosing what to import
-
 Prefer direct imports or short, meaningful module qualifiers for types and
 traits, even when used only once.
 
 - Import distinctive types directly, such as `Path`, `HashMap`, and
   `PhantomData`.
-- Keep short qualifiers where they clarify origin or distinguish APIs, as in
-  `io::Result`, `fs::read_to_string`, `mpsc::Sender`, and `image::Error`. Import
-  the module alongside distinctive members when useful, as in
-  `fmt::{self, Formatter}`.
-- Prefer `as _` for traits needed only for method resolution, as in
-  `use anyhow::Context as _;`. Keep named imports for traits used in bounds or
-  implementations.
-
-Resolve collisions, including with derive macros, with a meaningful module
-qualifier or descriptive alias, such as `error::Error` or `Error as StdError`.
-Keep fully qualified paths when they improve clarity; occasional utility calls
-and derive macro paths need not all become imports. Import only what is used.
-
-### Grouping and layout
-
+- Use short qualifiers to clarify origin or distinguish APIs, as in
+  `io::Result`, `fs::read_to_string`, and `mpsc::Sender`. Import the module
+  alongside distinctive members when useful, as in `fmt::{self, Formatter}`.
+- Resolve collisions, including with derive macros, with a meaningful module
+  qualifier or descriptive alias, such as `error::Error` or `Error as StdError`.
+- Keep fully qualified paths when they improve clarity.
 - For items in child modules, prefer `use self::child::Item` over
   `use child::Item`.
 - Organize imports into three groups: standard library (`std`, `core`, `alloc`),
@@ -52,9 +41,6 @@ and derive macro paths need not all become imports. Import only what is used.
   Apply the same grouping to local imports sharing a `crate`, `self`, or `super`
   root. Keep imports with different visibility or attributes separate.
 
-The first group below supports `fs::read_to_string`, `io::Result`, and direct
-uses of `File` and `Path`.
-
 ```rust
 use std::{
     fs::{self, File},
@@ -64,12 +50,7 @@ use std::{
 
 use serde::{Deserialize, Serialize};
 
-use crate::{
-    config::{Config, Mode},
-    input::Reader,
-    output::{Format, Writer},
-    storage::Store,
-};
+use crate::{config::Config, input::Reader};
 ```
 
 ## Path parameters

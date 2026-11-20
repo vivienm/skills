@@ -18,10 +18,11 @@ launch. Finish any requested implementation and run relevant checks before the
 first pass. Stop if the review target is empty or inaccessible.
 
 For a patch review, pin the comparison base for the whole loop. Use the initial
-`HEAD` when reviewing only uncommitted Git changes. Inspect staged and unstaged
-changes separately and include in-scope untracked files. For a content review,
-include every requested file. Include fixes from the loop in subsequent passes
-and preserve unrelated work and staging.
+`HEAD` when reviewing only uncommitted Git changes. Review all changes against
+that base together, including in-scope untracked files. Review the index
+separately when staging is in scope. For a content review, include every
+requested file. Include loop fixes in subsequent passes and preserve unrelated
+work and staging.
 
 ## Review, fix, and verify
 
