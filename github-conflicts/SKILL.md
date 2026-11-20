@@ -12,8 +12,9 @@ license: MIT
 
 Verify that the PR is open and identify its head and base repositories and refs.
 Determine whether the PR belongs to a stack before choosing a workflow. Look for
-the PR in `gh stack view --json` in the relevant checkout, then check GitHub's
-stack metadata if there is no matching local entry.
+the PR in `gh stack view --json` in the relevant checkout. If no local entry
+matches, check the PR's `stack` field in the [GitHub REST API]. A failed lookup
+leaves stack membership undetermined.
 
 Start in a clean worktree and preserve unrelated work. Resume an operation only
 if it matches the target PR and all affected branches are in scope. Use the
@@ -46,11 +47,14 @@ layers, and conflict recovery. `gh stack sync` can publish.
 Inspect the result and run relevant checks. Push only when authorized. Verify
 that the outgoing commits and remote refs are in scope and that the updates
 preserve remote work. For a standalone PR, push to its explicit head ref. For a
-stack, confirm which layers `gh stack push` will update.
+stack, `gh stack push` pushes all active branches, including those outside the
+scope of a partial rebase.
 
 After a failed push, inspect which remote refs changed before retrying. Report
 the affected branches, checks, and publication status.
 
 [gh-stack skill]: https://github.com/github/gh-stack/tree/main/skills/gh-stack
+[GitHub REST API]:
+  https://docs.github.com/en/pull-requests/reference/stacked-pull-requests-apis-and-webhooks#rest-api
 [GitHub conflict editor]:
   https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/resolving-a-merge-conflict-on-github
