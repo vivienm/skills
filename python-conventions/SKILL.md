@@ -1,15 +1,15 @@
 ---
 name: python-conventions
 description: >-
-  Apply personal Python coding conventions when adding or substantially
-  rewriting Python code. Do not use to enforce style on unchanged code.
+  Apply personal Python coding conventions to new or substantially rewritten
+  Python code.
 license: MIT
 ---
 
 # Python conventions
 
 Follow repository instructions first. Apply these preferences only to new or
-substantially rewritten code.
+substantially rewritten code. This excludes code copied or moved unchanged.
 
 ## Regular expressions
 

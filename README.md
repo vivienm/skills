@@ -6,20 +6,16 @@ Personal agent skills. Each skill has its own top-level directory.
 
 - [github-conflicts](github-conflicts/SKILL.md): Resolve conflicts in stacked
   and standalone GitHub pull requests.
-- [python-conventions](python-conventions/SKILL.md): Conventions for adding or
-  substantially rewriting Python code.
-- [review-loop](review-loop/SKILL.md): Iterate on a change set with independent
-  reviews by native subagents.
-- [rust-conventions](rust-conventions/SKILL.md): Conventions for adding or
-  substantially rewriting Rust code.
+- [python-conventions](python-conventions/SKILL.md): Conventions for new and
+  substantially rewritten Python code.
+- [review-loop](review-loop/SKILL.md): Run independent review-and-fix passes
+  with native subagents.
+- [rust-conventions](rust-conventions/SKILL.md): Conventions for new and
+  substantially rewritten Rust code.
 
 ## Installation
 
 Install with the [GitHub CLI](https://cli.github.com/manual/gh_skill_install).
-
-For stacked PRs, `github-conflicts` also requires the
-[`gh-stack` skill](https://github.com/github/gh-stack/tree/main/skills/gh-stack)
-and the [`gh stack` extension](https://github.com/github/gh-stack#installation).
 
 Install all skills:
 
@@ -43,6 +39,13 @@ Update a specific skill:
 
 ```shell
 gh skill update rust-conventions
+```
+
+For stacked PRs, install the `gh-stack` skill and extension as well.
+
+```shell
+gh extension install github/gh-stack
+gh skill install github/gh-stack gh-stack --agent universal --scope user
 ```
 
 ## Validation

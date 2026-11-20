@@ -1,8 +1,8 @@
 ---
 name: rust-conventions
 description: >-
-  Apply personal Rust coding conventions when adding or substantially rewriting
-  Rust code. Do not use to enforce style on unchanged code.
+  Apply personal Rust coding conventions to new or substantially rewritten Rust
+  code.
 license: MIT
 ---
 
@@ -61,7 +61,8 @@ fn read_config<P: AsRef<Path>>(path: P) -> io::Result<String> {
 
 ### Grouping and layout
 
-- For imports from the current module, prefer `use self::foo` over `use foo`.
+- For items in child modules, prefer `use self::child::Item` over
+  `use child::Item`.
 - Organize imports into three groups: standard library (`std`, `core`, `alloc`),
   external crates, and local imports (`self`, `super`, `crate`), in that order.
   Separate groups with a blank line.
@@ -94,8 +95,7 @@ public APIs. Use `path.as_ref()` inside the body when a `&Path` is needed.
 
 ## Derives
 
-When deriving any of the following traits, use this relative order: `Copy`,
-`Clone`, `Eq`, `PartialEq`, `Ord`, `PartialOrd`, `Hash`, `Debug`, `Display`,
-`Default`. Place any other derived traits after these, with traits from external
-crates (e.g. `Serialize`, `Deserialize`) first, followed by traits from the
-local crate (e.g. `CrateSpecificTrait`).
+Keep `Copy`, `Clone`, `Eq`, `PartialEq`, `Ord`, `PartialOrd`, `Hash`, `Debug`,
+`Display` (when supplied by a derive macro), and `Default` in that relative
+order. List other external derives, such as `Serialize` and `Deserialize`, next,
+followed by local derives such as `CrateSpecificTrait`.
