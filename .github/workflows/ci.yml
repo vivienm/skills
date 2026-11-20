@@ -13,9 +13,12 @@ jobs:
     name: Validate skills
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - name: Check out repository
+        uses: actions/checkout@v7
         with:
           persist-credentials: false
+      - name: Check Markdown formatting
+        run: npx --yes prettier --check --prose-wrap always --print-width 80 '**/*.md'
       - name: Validate skills
         run: gh skill publish --dry-run
         env:
