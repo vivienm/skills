@@ -25,39 +25,20 @@ required by macros.
 Prefer direct imports or short, meaningful module qualifiers for types and
 traits, even when used only once.
 
-- Import distinctive types directly, such as `Path`, `HashMap`, `Arc`,
-  `Duration`, and `PhantomData`. Prefer `Path` over `std::path::Path` or
-  `path::Path` in signatures and expressions.
-- Import utility modules such as `io`, `fs`, `env`, and `process` when useful.
-  Keep meaningful qualifiers such as `io::Result`, `io::Error`, `io::ErrorKind`,
-  and `fs::read_to_string`, rather than importing every member directly. This
-  can coexist with direct imports such as `File`, `Read`, and `Write`: use
-  `fs::{self, File}` or `io::{self, Read}`.
-- For formatting implementations, prefer `fmt::{self, Formatter}` and write
-  `Formatter` and `fmt::Result`. Import `Display` or `Debug` directly when
-  useful.
-- Apply the same readability criterion to external crates and local modules. A
-  module qualifier can distinguish related APIs, as in `mpsc::Sender` and
-  `oneshot::Sender`, or identify a domain, as in `image::Error`.
-- For traits needed only for method resolution, prefer `as _` when their name is
-  otherwise unnecessary, e.g. `use anyhow::Context as _;` or
-  `use std::fmt::Write as _;`. Keep named imports for traits used in bounds or
+- Import distinctive types directly, such as `Path`, `HashMap`, and
+  `PhantomData`.
+- Keep short qualifiers where they clarify origin or distinguish APIs, as in
+  `io::Result`, `fs::read_to_string`, `mpsc::Sender`, and `image::Error`. Import
+  the module alongside distinctive members when useful, as in
+  `fmt::{self, Formatter}`.
+- Prefer `as _` for traits needed only for method resolution, as in
+  `use anyhow::Context as _;`. Keep named imports for traits used in bounds or
   implementations.
 
 Resolve collisions, including with derive macros, with a meaningful module
 qualifier or descriptive alias, such as `error::Error` or `Error as StdError`.
 Keep fully qualified paths when they improve clarity; occasional utility calls
 and derive macro paths need not all become imports. Import only what is used.
-
-For example:
-
-```rust
-use std::{fs, io, path::Path};
-
-fn read_config<P: AsRef<Path>>(path: P) -> io::Result<String> {
-    fs::read_to_string(path)
-}
-```
 
 ### Grouping and layout
 
@@ -71,13 +52,17 @@ fn read_config<P: AsRef<Path>>(path: P) -> io::Result<String> {
   Apply the same grouping to local imports sharing a `crate`, `self`, or `super`
   root. Keep imports with different visibility or attributes separate.
 
-For example:
+The first group below supports `fs::read_to_string`, `io::Result`, and direct
+uses of `File` and `Path`.
 
 ```rust
-use std::sync::{
-    atomic::{AtomicI64, Ordering},
-    Arc, Mutex,
+use std::{
+    fs::{self, File},
+    io,
+    path::Path,
 };
+
+use serde::{Deserialize, Serialize};
 
 use crate::{
     config::{Config, Mode},

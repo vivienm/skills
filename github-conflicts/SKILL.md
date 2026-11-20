@@ -8,71 +8,49 @@ license: MIT
 
 # GitHub conflicts
 
-## Identify the PR and workflow
+## Choose the workflow
 
-Verify that the target PR is open. Identify its head and base branches and
-repositories, including forks and non-default bases.
+Verify that the PR is open and identify its head and base repositories and refs.
+Determine whether the PR belongs to a stack before choosing a workflow. Look for
+the PR in `gh stack view --json` in the relevant checkout, then check GitHub's
+stack metadata if there is no matching local entry.
 
-Check for local changes and in-progress operations. Start new operations in a
-clean worktree and preserve unrelated work. Resume an operation only when it
-matches the target PR, using the original tool in the worktree where it paused.
-
-Check stack membership with `gh stack view --json` for the relevant checkout and
-GitHub stack metadata as needed. Match by PR identity or by head branch and
-repository. The local command describes the current stack, so an absent match is
-inconclusive on its own. Resolve ambiguous membership before choosing a
-workflow.
-
-Resolve conflicts in line with the intent of both changes. Check for leftover
-conflict markers, stage only resolved paths, and confirm no unmerged paths
-remain before continuing.
+Start in a clean worktree and preserve unrelated work. Resume an operation only
+if it matches the target PR and all affected branches are in scope. Use the
+original tool. Resolve conflicts in line with the intent of both changes. Before
+continuing, stage only the resolved paths and check for leftover markers and
+unmerged paths.
 
 ## Standalone PR
 
-Merge the PR's actual base into its head, as the [GitHub conflict editor] does.
-Check out the PR branch and compare it with its freshly fetched published head.
-Fast-forward if behind. Before merging, verify that any local-only commits are
-in scope. Report those commits and ask if their scope is unclear. Reconcile any
-divergence before merging. Fetch the base from the PR's base repository.
+Start from the freshly fetched PR head and include local commits only if they
+are in scope. Fetch the PR's actual base and merge it into the head, as the
+[GitHub conflict editor] does.
 
 ```shell
 git fetch "$base_remote" "refs/heads/$base_branch" &&
   git merge --ff --no-edit FETCH_HEAD
 ```
 
-If the merge stops on conflicts, resolve and stage them, then finish the pending
-merge with `git commit --no-edit`. Before resuming an existing merge, verify the
-checked-out branch and that its sole `MERGE_HEAD` matches the expected base
-commit. Use `git merge --abort` to abandon the merge.
+Before resuming a merge in its worktree, verify the head and that `MERGE_HEAD`
+contains only the expected base commit. Finish with `git commit --no-edit` after
+staging the resolutions.
 
 ## Stacked PR
 
-Use the `gh-stack` skill for stack checkout, remotes, worktree ownership, and
-recovery. Report a missing skill or extension as a blocker. Use
-`gh stack rebase --upstack` from the lowest affected layer, or `gh stack rebase`
-when refreshing the whole stack. Use rebase for local resolution because
-`gh stack sync` can publish.
-
-If the rebase pauses, resolve and stage the conflicts in the reported worktree.
-Continue with `gh stack rebase --continue` and repeat as needed. Use
-`gh stack rebase --abort` to abandon the cascade.
+Follow the [gh-stack skill] for checkout, a local rebase scoped to the affected
+layers, and conflict recovery. `gh stack sync` can publish.
 
 ## Verify and publish
 
-Inspect the result and run relevant checks. Push only when authorized. Before
-pushing, confirm the destination and check that the outgoing updates preserve
-remote work and affect only branches and commits in scope. `gh stack push` can
-update other layers after an `--upstack` rebase.
-
-For a stack, follow the `gh-stack` skill. For a standalone PR, push to its
-explicit head ref.
-
-```shell
-git push "$head_remote" "HEAD:refs/heads/$head_branch"
-```
+Inspect the result and run relevant checks. Push only when authorized. Verify
+that the outgoing commits and remote refs are in scope and that the updates
+preserve remote work. For a standalone PR, push to its explicit head ref. For a
+stack, confirm which layers `gh stack push` will update.
 
 After a failed push, inspect which remote refs changed before retrying. Report
 the affected branches, checks, and publication status.
 
+[gh-stack skill]: https://github.com/github/gh-stack/tree/main/skills/gh-stack
 [GitHub conflict editor]:
   https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/resolving-a-merge-conflict-on-github
