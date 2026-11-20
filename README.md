@@ -4,6 +4,8 @@ Personal agent skills.
 
 ## Available skills
 
+- [bash-conventions](bash-conventions/SKILL.md): Conventions for new and
+  substantially rewritten Bash code.
 - [github-conflicts](github-conflicts/SKILL.md): Resolve merge conflicts in
   GitHub pull requests.
 - [python-conventions](python-conventions/SKILL.md): Conventions for new and
