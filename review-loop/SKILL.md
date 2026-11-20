@@ -16,11 +16,12 @@ subagents are unavailable, report that the independent review is blocked.
 State the scope and pass limit, **five** by default. Count every reviewer
 launch, including incomplete or stale passes.
 
-For a patch review, fix the comparison base for the loop. In Git, resolve the
-intended branch comparison to a commit or use the starting HEAD for worktree and
-index changes alone. Include in-scope committed, staged, unstaged, and untracked
-changes. Inspect the staged and unstaged layers separately so one cannot hide
-the other.
+For a patch review, fix the comparison base for the loop. In Git, use the
+starting HEAD for a review of uncommitted changes only. If the repository state
+makes the intended comparison unclear, explain the ambiguity and ask the user
+when it affects the scope of the review. Include in-scope committed, staged,
+unstaged, and untracked changes. Inspect the staged and unstaged layers
+separately so one cannot hide the other.
 
 For a content review, include all requested files, even if they are unchanged.
 Include loop fixes in either mode and preserve unrelated work and staging.

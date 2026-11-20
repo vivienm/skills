@@ -30,13 +30,14 @@ remain before continuing.
 ## Standalone PR
 
 Merge the PR's actual base into its head, as the [GitHub conflict editor] does.
-Check out the PR head and fast-forward it to the published head if it is behind.
-If the histories diverged, reconcile the incoming and local work before
-proceeding. Fetch from the remote that matches the PR's base repository.
+Check out the PR branch and compare it with its freshly fetched published head.
+Fast-forward if behind. Before merging, verify that any local-only commits are
+in scope. Report those commits and ask if their scope is unclear. Reconcile any
+divergence before merging. Fetch the base from the PR's base repository.
 
 ```shell
 git fetch "$base_remote" "refs/heads/$base_branch" &&
-  git merge --no-edit FETCH_HEAD
+  git merge --ff --no-edit FETCH_HEAD
 ```
 
 If the merge stops on conflicts, resolve and stage them, then finish the pending
