@@ -9,12 +9,13 @@ license: MIT
 # GitHub conflicts
 
 Verify that the PR is open and identify its head and base repositories and
-branches. Check its `stack` field in the [GitHub REST API] to choose the
-workflow.
+branches. Check its `stack` field in the [GitHub REST API] for native stack
+membership. If the user or local tracking identifies an unlinked stack, follow
+that stack's workflow.
 
 ## Standalone PR
 
-If the API confirms the PR has no stack, fetch its head and base. Start from the
+After confirming the PR is standalone, fetch its head and base. Start from the
 fetched head and merge in the fetched base, as the [GitHub conflict editor]
 does. Resume the PR's pending merge in its checkout after verifying that its
 head and merge parent match the PR head and base commits. Preserve unrelated
@@ -24,7 +25,7 @@ Resolve the conflicts and stage the resolutions. Before finishing the merge,
 review the index and confirm that all staged changes belong to the merge. Run
 relevant checks. If authorized, push to the PR's head repository and branch.
 
-## Stacked PR
+## Native GitHub stack
 
 Compare local tracking with the GitHub stack and confirm which branches will be
 affected. Fetch and record their tips from the stack's GitHub repository. Before
