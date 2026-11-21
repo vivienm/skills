@@ -9,7 +9,7 @@
 - [python-conventions](python-conventions/SKILL.md): Conventions for new and
   substantially rewritten Python code.
 - [review-loop](review-loop/SKILL.md): Run independent review-and-fix passes
-  with native subagents.
+  with native subagents when the user requests iterative review and correction.
 - [rust-conventions](rust-conventions/SKILL.md): Conventions for new and
   substantially rewritten Rust code.
 
