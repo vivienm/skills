@@ -29,14 +29,12 @@ work and staging.
 1. Start a fresh subagent conversation. Provide the repository path and
    instructions, requirements, full target, comparison base if applicable, check
    results, and relevant prior decisions. Ask for a read-only review covering
-   defects and worthwhile in-scope suggestions. Request locations, evidence,
-   coverage limits, and a verdict.
+   defects and concrete gaps against the requirements. Request locations,
+   evidence, coverage limits, and a verdict.
 2. Keep the target stable and discard the verdict if it changed during review.
-   Evaluate findings against the requirements. Record the reasons for
-   non-obvious decisions and any findings still open.
-3. Apply focused fixes and worthwhile in-scope improvements. Rerun relevant
-   checks, and use another pass to review changes or disputed decisions within
-   the limit.
+   Evaluate findings against the requirements.
+3. Apply focused fixes, rerun relevant checks, and use another pass to review
+   changes or disputed decisions within the limit.
 
 ## Stop and report
 
@@ -44,5 +42,5 @@ The loop converges when an independent review of the **final version** finds no
 actionable changes, all findings are addressed or explained, and required checks
 pass. Stop reviewing at the pass limit or when further passes cannot make
 progress. Finish justified fixes and checks, then report the outcome, passes
-used, check results, open findings, and any edits since the last independent
-review.
+used, check results, open findings, reasons for non-obvious decisions, and any
+edits since the last independent review.

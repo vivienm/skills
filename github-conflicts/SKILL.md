@@ -27,12 +27,15 @@ relevant checks. If authorized, push to the PR's head repository and branch.
 ## Stacked PR
 
 Compare local tracking with the GitHub stack and confirm which branches will be
-affected before rebasing. Follow the [gh-stack skill] for checkout, cascading
-rebase, and conflict recovery. Run relevant checks and publish only authorized
-updates that preserve remote work. `gh stack push` pushes every active branch,
-so push branches explicitly when only a subset is authorized. For rewritten
-branches, pin `--force-with-lease` to the remote tips included in their
-pre-rebase history.
+affected. Fetch and record their tips from the stack's GitHub repository. Before
+rebasing, verify that each tip is in its branch's local history. Follow the
+[gh-stack skill] for checkout, cascading rebase, and conflict recovery.
+
+Run relevant checks. Use `git push` with the same repository and explicit
+refspecs for authorized branch updates. Use `--atomic` when pushing multiple
+branches. For each rewritten branch, set `--force-with-lease=<ref>:<sha>` to the
+recorded tip. `gh stack push` refreshes its leases at push time. Include
+`-o pull.stacked` on force pushes if the remote supports push options.
 
 [gh-stack skill]: https://github.com/github/gh-stack/tree/main/skills/gh-stack
 [GitHub REST API]:
