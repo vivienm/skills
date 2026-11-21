@@ -20,8 +20,8 @@ which tools and schemas are exposed in the current session.
   daemon with `TITLE` set to the requested title. Use the confirmed workspace ID
   if `PASEO_WORKSPACE_ID` is empty or unset.
 - **Codex Desktop:** Discover and use `set_thread_title` if exposed.
-- **OpenCode:** Call `opencode.session_rename` in Code Mode and omit `sessionID`
-  to target the current session. [OpenCode tools]
+- **OpenCode:** If exposed, call `opencode.session_rename` in Code Mode and omit
+  `sessionID` to target the current session. [OpenCode tools]
 
 If those options do not apply, look for an equivalent native action in the
 active app. If it requires an ID, confirm that the ID belongs to the current
