@@ -33,8 +33,8 @@ work and staging.
    evidence, coverage limits, and a verdict.
 2. Keep the target stable and discard the verdict if it changed during review.
    Evaluate findings against the requirements.
-3. Apply focused fixes, rerun relevant checks, and use another pass to review
-   changes or disputed decisions within the limit.
+3. Apply focused fixes, rerun relevant checks, and review the updated target in
+   another pass within the limit.
 
 ## Stop and report
 

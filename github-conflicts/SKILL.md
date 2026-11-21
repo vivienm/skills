@@ -31,7 +31,8 @@ affected. Fetch and record their tips from the stack's GitHub repository. Before
 rebasing, verify that each tip is in its branch's local history. Follow the
 [gh-stack skill] for checkout, cascading rebase, and conflict recovery.
 
-Run relevant checks. Use `git push` with the same repository and explicit
+Run relevant checks. Before pushing, verify that the commits to be published on
+each branch are in scope. Use `git push` with the same repository and explicit
 refspecs for authorized branch updates. Use `--atomic` when pushing multiple
 branches. For each rewritten branch, set `--force-with-lease=<ref>:<sha>` to the
 recorded tip. `gh stack push` refreshes its leases at push time. Include

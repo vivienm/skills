@@ -13,7 +13,7 @@ preferences only to new or substantially rewritten code.
 
 - Use `set -euo pipefail` at the start of Bash scripts that run in their own
   process.
-- Follow the [Google Shell Style Guide].
+- Follow the [Google Shell Style Guide] for Bash code style.
 
 [Google Shell Style Guide]:
   https://raw.githubusercontent.com/google/styleguide/refs/heads/gh-pages/shellguide.md
