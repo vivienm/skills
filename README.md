@@ -18,4 +18,9 @@ Personal skills for agentic workflows.
 - [review-loop](review-loop/SKILL.md): Run independent review-and-fix passes
   with native subagents when the user requests iterative review and correction.
 
+## Conversation management
+
+- [rename-thread](rename-thread/SKILL.md): Rename the current conversation or
+  workspace using the active app's native tools.
+
 [gh-stack skill]: https://github.com/github/gh-stack/tree/main/skills/gh-stack
