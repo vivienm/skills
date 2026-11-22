@@ -1,0 +1,13 @@
+# Changes here will be overwritten by Copier. NEVER EDIT MANUALLY.
+
+_commit: a6d99ad
+_src_path: https://github.com/vivienm/copier-skills
+copyright_holder: Vivien Maisonneuve
+copyright_year: 2026
+forge: github
+github_repo: skills
+github_user: vivienm
+license: MIT
+project_description: Personal skills for agentic workflows.
+project_name: Skills
+user_name: Vivien Maisonneuve
